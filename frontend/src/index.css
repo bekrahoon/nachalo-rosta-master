@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-base-100 text-base-content;
+  }
+}
+
+@layer components {
+  /* DaisyUI классы — НЕ нужно @apply, они уже готовые */
+  /* Если хотите свои обёртки — используйте utility-классы, а не DaisyUI компоненты */
+  
+  .my-btn-primary {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg bg-primary text-primary-content font-medium hover:bg-primary-focus transition-colors;
+  }
+
+  .my-btn-secondary {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg bg-secondary text-secondary-content font-medium hover:bg-secondary-focus transition-colors;
+  }
+
+  .my-card {
+    @apply bg-base-100 shadow-md rounded-xl p-6;
+  }
+
+  .my-input {
+    @apply w-full px-4 py-2 rounded-lg border border-base-300 bg-base-100 focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+
+  .my-label {
+    @apply block text-sm font-medium text-base-content mb-1;
+  }
+}
+
+/* Smooth transitions */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
