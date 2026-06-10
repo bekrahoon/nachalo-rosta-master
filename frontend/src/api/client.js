@@ -4,7 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080
 
 // Создаём axios instance
 const apiClient = axios.create({
-  baseURL: `${API_BASE_URL}/api/v1`,
+  baseURL: `${API_BASE_URL}`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -73,7 +73,7 @@ apiClient.interceptors.response.use(
         }
 
         const response = await axios.post(
-          `${API_BASE_URL}/api/v1/auth/token/refresh/`,
+          `${API_BASE_URL}/auth/token/refresh/`,
           { refresh: refreshToken },
           { withCredentials: true }
         );

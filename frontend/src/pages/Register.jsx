@@ -49,11 +49,10 @@ export const Register = () => {
 
   const onSubmit = async (data) => {
     setLocalError(null);
-    const { password_confirm, ...submitData } = data;
-    
-    const result = await register(submitData);
-    
-    if (result.rejected) {
+
+    const result = await register(data);
+
+    if (result.meta.requestStatus === 'rejected') {
       setLocalError(result.payload);
     } else {
       setRegistrationSuccess(true);

@@ -1,6 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as authApi from '../api/auth';
 
+// Преобразует ошибку DRF (объект с массивами сообщений по полям) в строку
+const formatApiError = (data, fallback) => {
+  if (!data) return fallback;
+  if (typeof data === 'string') return data;
+  if (data.detail) return data.detail;
+  if (Array.isArray(data)) return data.join(' ');
+  if (typeof data === 'object') {
+    return Object.values(data).flat().join(' ');
+  }
+  return fallback;
+};
+
 // Async thunks
 export const loginThunk = createAsyncThunk(
   'auth/login',
@@ -28,7 +40,7 @@ export const registerThunk = createAsyncThunk(
       const response = await authApi.registerUser(data);
       return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Registration failed');
+      return rejectWithValue(formatApiError(error.response?.data, 'Registration failed'));
     }
   }
 );
@@ -66,7 +78,7 @@ export const updateProfileThunk = createAsyncThunk(
       localStorage.setItem('user', JSON.stringify(userData));
       return userData;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Update failed');
+      return rejectWithValue(formatApiError(error.response?.data, 'Update failed'));
     }
   }
 );
@@ -102,7 +114,7 @@ export const changePasswordThunk = createAsyncThunk(
       const response = await authApi.changePassword(data);
       return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Password change failed');
+      return rejectWithValue(formatApiError(error.response?.data, 'Password change failed'));
     }
   }
 );
@@ -114,7 +126,7 @@ export const requestPasswordResetThunk = createAsyncThunk(
       const response = await authApi.requestPasswordReset(email);
       return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Request failed');
+      return rejectWithValue(formatApiError(error.response?.data, 'Request failed'));
     }
   }
 );
@@ -126,7 +138,7 @@ export const confirmPasswordResetThunk = createAsyncThunk(
       const response = await authApi.confirmPasswordReset(data);
       return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Reset failed');
+      return rejectWithValue(formatApiError(error.response?.data, 'Reset failed'));
     }
   }
 );
