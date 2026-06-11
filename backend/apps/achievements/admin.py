@@ -7,17 +7,17 @@ from .models import Badge, UserBadge, Level, Stats
 class BadgeAdmin(admin.ModelAdmin):
     """Admin для Badge"""
     
-    list_display = ('name', 'icon', 'points', 'rarity', 'created_at')
-    list_filter = ('rarity', 'created_at')
+    list_display = ('name', 'icon', 'criteria_type', 'criteria_value', 'points', 'rarity', 'created_at')
+    list_filter = ('rarity', 'criteria_type', 'created_at')
     search_fields = ('name', 'description')
     readonly_fields = ('id', 'created_at')
-    
+
     fieldsets = (
         (_('Основная информация'), {
-            'fields': ('id', 'name', 'description', 'icon')
+            'fields': ('id', 'name', 'description', 'icon', 'icon_url')
         }),
         (_('Условия'), {
-            'fields': ('condition',)
+            'fields': ('condition', 'criteria_type', 'criteria_value')
         }),
         (_('Статистика'), {
             'fields': ('points', 'rarity')

@@ -10,8 +10,6 @@ from django.contrib.auth.hashers import make_password
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from datetime import timedelta
-import secrets
-import string
 
 User = get_user_model()
 
@@ -32,7 +30,8 @@ class UserSerializer(serializers.ModelSerializer):
             'date_of_birth', 'country', 'city', 'region',
             'role', 'email_verified', 'is_organizer', 'is_moderator',
             'created_at', 'updated_at', 'last_login_at',
-            'receive_emails', 'receive_notifications'
+            'receive_emails', 'receive_notifications',
+            'interests', 'skills'
         ]
         read_only_fields = [
             'id', 'email_verified', 'created_at', 'updated_at', 'last_login_at'
@@ -86,30 +85,21 @@ class RegisterSerializer(serializers.ModelSerializer):
         return attrs
     
     def create(self, validated_data):
-        """Create new user with email verification"""
+        """Create new user, active immediately (no email verification for MVP)"""
         user = User.objects.create(
             email=validated_data['email'],
             username=validated_data['email'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             phone=validated_data.get('phone', ''),
-            is_active=False,  # Not active until email is verified
+            is_active=True,
+            email_verified=True,
         )
-        
+
         # Hash and set password
         user.set_password(validated_data['password'])
-        
-        # Generate email verification token
-        token = secrets.token_urlsafe(32)
-        user.email_verification_token = token
-        user.email_verification_token_created = timezone.now()
-        
         user.save()
-        
-        # Send verification email via Celery task
-        from apps.accounts.tasks import send_email_verification
-        send_email_verification.delay(user.id)
-        
+
         return user
 
 
@@ -131,38 +121,9 @@ class LoginSerializer(serializers.Serializer):
         
         if not user.check_password(password):
             raise ValidationError(_('Invalid credentials.'))
-        
-        if not user.is_active:
-            raise ValidationError(_('Please verify your email before logging in.'))
-        
+
         attrs['user'] = user
         return attrs
-
-
-class EmailVerificationSerializer(serializers.Serializer):
-    """Serializer for email verification"""
-    
-    token = serializers.CharField()
-    
-    def validate_token(self, value):
-        """Validate email verification token"""
-        try:
-            user = User.objects.get(
-                email_verification_token=value,
-                email_verified=False
-            )
-            
-            # Check if token is not expired (24 hours)
-            if user.email_verification_token_created:
-                token_age = timezone.now() - user.email_verification_token_created
-                if token_age > timedelta(hours=24):
-                    raise ValidationError(_('Verification token has expired.'))
-            
-            self.user = user
-        except User.DoesNotExist:
-            raise ValidationError(_('Invalid or already used verification token.'))
-        
-        return value
 
 
 class PasswordResetRequestSerializer(serializers.Serializer):
@@ -284,7 +245,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'middle_name', 'phone',
             'bio', 'avatar', 'date_of_birth',
             'country', 'city', 'region',
-            'receive_emails', 'receive_notifications'
+            'receive_emails', 'receive_notifications',
+            'interests', 'skills'
         ]
 
 

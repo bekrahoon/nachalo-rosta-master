@@ -3,7 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
-from django.db.models import Q, Count, Avg
+from django.db.models import Q, Avg, F, FloatField, ExpressionWrapper
+from django.db.models.functions import ACos, Cos, Sin, Radians, Least, Greatest
 
 from .models import Event, EventVolunteer, EventRating
 from .serializers import (
@@ -42,12 +43,7 @@ class EventViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Фильтрация событий"""
         queryset = super().get_queryset()
-        
-        # Аннотируем для оптимизации
-        queryset = queryset.annotate(
-            total_volunteers=Count('eventvolunteer')
-        )
-        
+
         # Фильтр по дате
         date_filter = self.request.query_params.get('date_from')
         if date_filter:
@@ -79,6 +75,69 @@ class EventViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(events, many=True)
         return Response(serializer.data)
     
+    @action(detail=False, methods=['get'])
+    def nearby(self, request):
+        """
+        Получить события рядом с указанной точкой.
+        Параметры запроса: lat, lng (координаты точки) и radius_km (радиус поиска, по умолчанию 10 км).
+        Использует формулу гаверсинуса (Haversine) для расчёта расстояния.
+        """
+        lat_param = request.query_params.get('lat')
+        lng_param = request.query_params.get('lng')
+        radius_param = request.query_params.get('radius_km', '10')
+
+        if lat_param is None or lng_param is None:
+            return Response(
+                {'detail': 'Параметры lat и lng обязательны'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            lat = float(lat_param)
+            lng = float(lng_param)
+            radius_km = float(radius_param)
+        except ValueError:
+            return Response(
+                {'detail': 'lat, lng и radius_km должны быть числами'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        EARTH_RADIUS_KM = 6371.0
+
+        queryset = self.get_queryset().filter(
+            latitude__isnull=False,
+            longitude__isnull=False,
+        )
+
+        # Аргумент ACos из-за погрешности округления может выйти за пределы [-1, 1]
+        central_angle_cos = Greatest(
+            Least(
+                ExpressionWrapper(
+                    Sin(Radians(lat)) * Sin(Radians(F('latitude'))) +
+                    Cos(Radians(lat)) * Cos(Radians(F('latitude'))) *
+                    Cos(Radians(F('longitude')) - Radians(lng)),
+                    output_field=FloatField()
+                ),
+                1.0
+            ),
+            -1.0
+        )
+
+        queryset = queryset.annotate(
+            distance=ExpressionWrapper(
+                ACos(central_angle_cos) * EARTH_RADIUS_KM,
+                output_field=FloatField()
+            )
+        ).filter(distance__lte=radius_km).order_by('distance')
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = EventListSerializer(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = EventListSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
+
     @action(detail=False, methods=['get'])
     def featured(self, request):
         """Получить рекомендуемые события"""

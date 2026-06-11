@@ -7,7 +7,6 @@ import {
   Register,
   Dashboard,
   Profile,
-  VerifyEmail,
   Settings,
   Events,
   Achievements,
@@ -32,10 +31,6 @@ export const router = createBrowserRouter([
       {
         path: 'register',
         element: <Register />,
-      },
-      {
-        path: 'verify-email',
-        element: <VerifyEmail />,
       },
       {
         path: 'dashboard',

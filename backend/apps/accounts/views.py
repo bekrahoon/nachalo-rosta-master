@@ -19,7 +19,7 @@ from datetime import timedelta
 
 from .serializers import (
     UserSerializer, RegisterSerializer, LoginSerializer,
-    EmailVerificationSerializer, PasswordResetRequestSerializer,
+    PasswordResetRequestSerializer,
     PasswordResetSerializer, ChangePasswordSerializer,
     UserUpdateSerializer, LogoutSerializer
 )
@@ -69,85 +69,20 @@ class RegisterView(views.APIView):
     permission_classes = [permissions.AllowAny]
     
     def post(self, request):
-        """Register new user with email verification"""
+        """Register new user"""
         serializer = RegisterSerializer(data=request.data)
-        
+
         if serializer.is_valid():
             user = serializer.save()
             return Response(
                 {
-                    'message': _('Registration successful. Please check your email to verify your account.'),
+                    'message': _('Registration successful. You can now log in.'),
                     'email': user.email
                 },
                 status=status.HTTP_201_CREATED
             )
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class EmailVerificationView(views.APIView):
-    """
-    Email verification endpoint.
-    POST: Verify email with token
-    """
-    permission_classes = [permissions.AllowAny]
-    
-    def post(self, request):
-        """Verify email using token"""
-        serializer = EmailVerificationSerializer(data=request.data)
-        
-        if serializer.is_valid():
-            user = serializer.user
-            user.activate_email()
-            
-            return Response(
-                {
-                    'message': _('Email verified successfully. You can now log in.'),
-                    'user': UserSerializer(user).data
-                },
-                status=status.HTTP_200_OK
-            )
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ResendVerificationEmailView(views.APIView):
-    """
-    Resend email verification token.
-    POST: Resend verification email
-    """
-    permission_classes = [permissions.AllowAny]
-    
-    def post(self, request):
-        """Resend verification email"""
-        email = request.data.get('email', '').lower()
-        
-        try:
-            user = User.objects.get(email=email, email_verified=False)
-        except User.DoesNotExist:
-            # For security, don't reveal if email exists
-            return Response(
-                {'message': _('If the email exists and is not verified, a verification email will be sent.')},
-                status=status.HTTP_200_OK
-            )
-        
-        # Generate new token
-        token = secrets.token_urlsafe(32)
-        user.email_verification_token = token
-        user.email_verification_token_created = timezone.now()
-        user.save(update_fields=[
-            'email_verification_token',
-            'email_verification_token_created'
-        ])
-        
-        # Send verification email
-        from apps.accounts.tasks import send_email_verification
-        send_email_verification.delay(user.id)
-        
-        return Response(
-            {'message': _('Verification email has been sent.')},
-            status=status.HTTP_200_OK
-        )
 
 
 class PasswordResetRequestView(views.APIView):

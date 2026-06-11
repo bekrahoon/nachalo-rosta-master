@@ -105,6 +105,20 @@ class CustomUser(AbstractUser):
     # Preferences
     receive_emails = models.BooleanField(_('receive emails'), default=True)
     receive_notifications = models.BooleanField(_('receive notifications'), default=True)
+
+    # Volunteering profile (used for AI recommendations matching)
+    interests = models.JSONField(
+        _('interests'),
+        default=list,
+        blank=True,
+        help_text=_('List of volunteering interest categories, e.g. ["education", "environment"]')
+    )
+    skills = models.JSONField(
+        _('skills'),
+        default=list,
+        blank=True,
+        help_text=_('List of skills, e.g. ["first aid", "photography", "teaching"]')
+    )
     
     # OAuth fields (for future social auth)
     google_id = models.CharField(max_length=255, blank=True, null=True, unique=True)

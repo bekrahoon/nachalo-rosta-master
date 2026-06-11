@@ -45,18 +45,6 @@ export const registerThunk = createAsyncThunk(
   }
 );
 
-export const verifyEmailThunk = createAsyncThunk(
-  'auth/verifyEmail',
-  async (token, { rejectWithValue }) => {
-    try {
-      const data = await authApi.verifyEmail(token);
-      return data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.token || 'Verification failed');
-    }
-  }
-);
-
 export const getProfileThunk = createAsyncThunk(
   'auth/getProfile',
   async (_, { rejectWithValue }) => {
@@ -204,22 +192,6 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(registerThunk.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
-
-    // Verify Email
-    builder
-      .addCase(verifyEmailThunk.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(verifyEmailThunk.fulfilled, (state, action) => {
-        state.loading = false;
-        state.message = action.payload.message;
-        state.error = null;
-      })
-      .addCase(verifyEmailThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

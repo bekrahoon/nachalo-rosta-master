@@ -5,7 +5,6 @@ import {
   registerThunk,
   getProfileThunk,
   updateProfileThunk,
-  verifyEmailThunk,
   changePasswordThunk,
   requestPasswordResetThunk,
   confirmPasswordResetThunk,
@@ -39,10 +38,6 @@ export const useAuth = () => {
     return dispatch(updateProfileThunk(data));
   };
 
-  const verifyEmail = async (token) => {
-    return dispatch(verifyEmailThunk(token));
-  };
-
   const changePassword = async (data) => {
     return dispatch(changePasswordThunk(data));
   };
@@ -74,7 +69,6 @@ export const useAuth = () => {
     logout,
     getProfile,
     updateProfile,
-    verifyEmail,
     changePassword,
     requestPasswordReset,
     confirmPasswordReset,

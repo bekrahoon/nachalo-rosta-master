@@ -18,51 +18,6 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
-def send_email_verification(self, user_id):
-    """
-    Send email verification link to user.
-    """
-    try:
-        user = User.objects.get(id=user_id)
-        
-        # Prepare email context
-        verification_url = f"{settings.FRONTEND_URL}/verify-email/?token={user.email_verification_token}"
-        
-        context = {
-            'user': user,
-            'verification_url': verification_url,
-            'token': user.email_verification_token,
-            'site_name': 'Nachalo Rosta',
-        }
-        
-        # Render HTML email
-        html_message = render_to_string('emails/verification.html', context)
-        plain_message = render_to_string('emails/verification.txt', context)
-        
-        # Send email
-        send_mail(
-            subject=_('Verify your email address - Nachalo Rosta'),
-            message=plain_message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            html_message=html_message,
-            fail_silently=False,
-        )
-        
-        logger.info(f'Verification email sent to {user.email}')
-        return f'Verification email sent to {user.email}'
-    
-    except User.DoesNotExist:
-        logger.error(f'User with id {user_id} not found')
-        return f'User not found'
-    
-    except Exception as exc:
-        logger.error(f'Error sending verification email: {str(exc)}')
-        # Retry task if it fails
-        raise self.retry(exc=exc)
-
-
-@shared_task(bind=True, max_retries=3, default_retry_delay=60)
 def send_password_reset_email(self, user_id):
     """
     Send password reset link to user.
@@ -142,23 +97,11 @@ def send_welcome_email(self, user_id):
 @shared_task
 def cleanup_expired_tokens():
     """
-    Clean up expired email verification and password reset tokens.
+    Clean up expired password reset tokens.
     Runs daily at 2 AM.
     """
     now = timezone.now()
-    expiration_time = now - timedelta(hours=24)
-    
-    # Clean expired email verification tokens
-    expired_verification = User.objects.filter(
-        email_verification_token_created__lt=expiration_time,
-        email_verified=False
-    )
-    count = expired_verification.update(
-        email_verification_token=None,
-        email_verification_token_created=None
-    )
-    logger.info(f'Cleaned {count} expired email verification tokens')
-    
+
     # Clean expired password reset tokens (1 hour old)
     password_reset_expiration = now - timedelta(hours=1)
     expired_reset = User.objects.filter(

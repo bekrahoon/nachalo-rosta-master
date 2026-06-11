@@ -1,0 +1,8 @@
+Новое достижение разблокировано!
+
+Привет, {{ user.first_name }}!
+
+Вы получили достижение: {{ badge.name }}
+{{ badge.description }}
+
+{{ site_name }} Team

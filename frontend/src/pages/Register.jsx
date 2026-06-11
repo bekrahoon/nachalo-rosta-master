@@ -68,20 +68,12 @@ export const Register = () => {
           <div className="card-body text-center">
             <CheckCircle className="w-16 h-16 mx-auto text-success mb-4" />
             <h2 className="text-2xl font-bold mb-2">Регистрация успешна!</h2>
-            <p className="text-gray-600 mb-4">
-              На email <strong>{registeredEmail}</strong> отправлено письмо с ссылкой для подтверждения.
+            <p className="text-gray-600 mb-6">
+              Аккаунт <strong>{registeredEmail}</strong> создан. Теперь вы можете войти.
             </p>
-            <p className="text-sm text-gray-500 mb-6">
-              Пожалуйста, проверьте вашу почту и нажмите на ссылку для активации аккаунта.
-            </p>
-            <div className="space-y-2">
-              <p className="text-xs text-gray-500">
-                Письмо может попасть в спам. Проверьте папку "Спам" если не видите письма.
-              </p>
-              <Link to="/login" className="btn btn-primary w-full">
-                Вернуться к входу
-              </Link>
-            </div>
+            <Link to="/login" className="btn btn-primary w-full">
+              Перейти ко входу
+            </Link>
           </div>
         </div>
       </div>

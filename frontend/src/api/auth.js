@@ -12,18 +12,6 @@ export const checkEmailAvailability = async (email) => {
   return response.data;
 };
 
-// Верификация email
-export const verifyEmail = async (token) => {
-  const response = await apiClient.post('/auth/verify-email/', { token });
-  return response.data;
-};
-
-// Переотправка письма верификации
-export const resendVerificationEmail = async (email) => {
-  const response = await apiClient.post('/auth/resend-verification/', { email });
-  return response.data;
-};
-
 // Вход (получение токенов)
 export const loginUser = async (email, password) => {
   const response = await apiClient.post('/auth/token/', { email, password });

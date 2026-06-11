@@ -36,8 +36,8 @@ export const Login = () => {
   const onSubmit = async (data) => {
     setLocalError(null);
     const result = await login(data.email, data.password);
-    
-    if (result.rejected) {
+
+    if (result.meta.requestStatus === 'rejected') {
       setLocalError(result.payload);
     } else {
       reset();

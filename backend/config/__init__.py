@@ -35,6 +35,10 @@ app.conf.beat_schedule = {
         'task': 'apps.accounts.tasks.cleanup_expired_tokens',
         'schedule': crontab(hour=2, minute=0),  # Daily at 2 AM
     },
+    'generate-event-recommendations': {
+        'task': 'apps.recommendations.tasks.generate_recommendations_for_all_users',
+        'schedule': crontab(hour=3, minute=0),  # Daily at 3 AM
+    },
 }
 
 @app.task(bind=True)

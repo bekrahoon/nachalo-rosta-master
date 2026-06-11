@@ -46,18 +46,27 @@ class EventListSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     total_volunteers = serializers.IntegerField(read_only=True)
     available_slots = serializers.IntegerField(read_only=True)
-    
+    distance_km = serializers.SerializerMethodField()
+
     class Meta:
         model = Event
         fields = [
             'id', 'title', 'description', 'category', 'category_display',
             'status', 'status_display', 'organizer', 'start_date', 'end_date',
-            'location', 'max_volunteers', 'total_volunteers', 'available_slots',
-            'is_online', 'is_featured', 'image', 'volunteer_hours', 'created_at'
+            'location', 'latitude', 'longitude', 'max_volunteers', 'total_volunteers',
+            'available_slots', 'is_online', 'is_featured', 'image', 'volunteer_hours',
+            'distance_km', 'created_at'
         ]
         read_only_fields = [
             'id', 'total_volunteers', 'available_slots', 'created_at'
         ]
+
+    def get_distance_km(self, obj):
+        """Расстояние до события в км (если аннотировано в queryset)"""
+        distance = getattr(obj, 'distance', None)
+        if distance is None:
+            return None
+        return round(distance, 2)
 
 
 class EventDetailSerializer(serializers.ModelSerializer):

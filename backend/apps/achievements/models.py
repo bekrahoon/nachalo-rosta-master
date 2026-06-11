@@ -6,11 +6,18 @@ import uuid
 User = get_user_model()
 
 
+class BadgeCriteriaType(models.TextChoices):
+    """Тип условия получения достижения"""
+    EVENTS_COMPLETED = 'events_completed', _('Завершено событий')
+    HOURS_COMPLETED = 'hours_completed', _('Часов отработано')
+    TEAMS_JOINED = 'teams_joined', _('Команд присоединено')
+
+
 class Badge(models.Model):
     """Модель достижения/бейджа"""
-    
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    
+
     # Основная информация
     name = models.CharField(_('название'), max_length=100, unique=True)
     description = models.TextField(_('описание'))
@@ -20,14 +27,27 @@ class Badge(models.Model):
         default='🏆',
         help_text='Emoji или путь к изображению'
     )
-    
+    icon_url = models.URLField(_('URL иконки'), blank=True)
+
     # Условия получения
     condition = models.CharField(
         _('условие получения'),
         max_length=100,
+        blank=True,
         help_text='Описание как получить это достижение'
     )
-    
+    criteria_type = models.CharField(
+        _('тип условия'),
+        max_length=30,
+        choices=BadgeCriteriaType.choices,
+        default=BadgeCriteriaType.EVENTS_COMPLETED,
+    )
+    criteria_value = models.PositiveIntegerField(
+        _('значение условия'),
+        default=1,
+        help_text='Например, 5 для "завершить 5 событий"'
+    )
+
     # Статистика
     points = models.IntegerField(_('баллы'), default=10)
     rarity = models.CharField(

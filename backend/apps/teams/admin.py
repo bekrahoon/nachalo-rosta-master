@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from .models import Team, TeamMember
+from .models import RecruitmentSlot, Team, TeamApplication, TeamMember
 
 
 @admin.register(Team)
@@ -55,3 +55,23 @@ class TeamMemberAdmin(admin.ModelAdmin):
             'fields': ('joined_at',)
         }),
     )
+
+
+@admin.register(RecruitmentSlot)
+class RecruitmentSlotAdmin(admin.ModelAdmin):
+    """Admin для RecruitmentSlot"""
+
+    list_display = ('team', 'event', 'slots_available', 'is_open', 'created_at')
+    list_filter = ('is_open', 'created_at')
+    search_fields = ('team__name', 'event__title')
+    readonly_fields = ('id', 'created_at')
+
+
+@admin.register(TeamApplication)
+class TeamApplicationAdmin(admin.ModelAdmin):
+    """Admin для TeamApplication"""
+
+    list_display = ('applicant', 'slot', 'status', 'applied_at', 'reviewed_at')
+    list_filter = ('status', 'applied_at')
+    search_fields = ('applicant__email', 'slot__team__name')
+    readonly_fields = ('id', 'applied_at')

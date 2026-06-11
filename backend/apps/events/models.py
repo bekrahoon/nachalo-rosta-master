@@ -61,8 +61,12 @@ class Event(models.Model):
     start_date = models.DateTimeField(_('дата начала'))
     end_date = models.DateTimeField(_('дата окончания'))
     location = models.CharField(_('место проведения'), max_length=200)
-    latitude = models.FloatField(_('широта'), null=True, blank=True)
-    longitude = models.FloatField(_('долгота'), null=True, blank=True)
+    latitude = models.DecimalField(
+        _('широта'), max_digits=9, decimal_places=6, null=True, blank=True
+    )
+    longitude = models.DecimalField(
+        _('долгота'), max_digits=9, decimal_places=6, null=True, blank=True
+    )
     
     # Волонтёры
     max_volunteers = models.IntegerField(
@@ -231,6 +235,3 @@ class EventRating(models.Model):
     
     def __str__(self):
         return f'{self.volunteer.email} - {self.event.title} - {self.rating}★'
-
-
-from django.core.validators import MaxValueValidator

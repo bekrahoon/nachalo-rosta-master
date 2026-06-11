@@ -32,6 +32,7 @@ django-redis==5.4.0
 # File Handling
 Pillow==10.1.0
 weasyprint==60.1
+pydyf==0.8.0
 
 # PDF Generation
 reportlab==4.0.8
