@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/v1/portfolio/', include('apps.portfolio.urls', namespace='portfolio')),
     path('api/v1/teams/', include('apps.teams.urls', namespace='teams')),
     path('api/v1/impact/', include('apps.impact.urls', namespace='impact')),
+    path('api/v1/aggregator/', include('apps.aggregator.urls', namespace='aggregator')),
     
     # Allauth (для социальной аутентификации и всяческих фич)
     path('accounts/', include('allauth.urls')),

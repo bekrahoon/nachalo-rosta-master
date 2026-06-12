@@ -1,5 +1,5 @@
 """
-AI-powered event recommendation service using the OpenAI API.
+AI-powered event recommendation service using the Anthropic API.
 """
 
 import json
@@ -8,21 +8,44 @@ import logging
 from django.conf import settings
 from django.utils import timezone
 
-from openai import OpenAI
+from anthropic import Anthropic
 
 from apps.events.models import Event, EventStatus
 from .models import EventRecommendation
 
 logger = logging.getLogger(__name__)
 
-RECOMMENDATION_MODEL = 'gpt-4o-mini'
+RECOMMENDATION_MODEL = 'claude-haiku-4-5-20251001'
+
+RECOMMENDATION_TOOL = {
+    'name': 'submit_recommendations',
+    'description': 'Сохранить список рекомендованных волонтёру мероприятий.',
+    'input_schema': {
+        'type': 'object',
+        'properties': {
+            'recommendations': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'event_id': {'type': 'string'},
+                        'match_score': {'type': 'number', 'minimum': 0, 'maximum': 100},
+                        'reason': {'type': 'string'},
+                    },
+                    'required': ['event_id', 'match_score', 'reason'],
+                },
+            },
+        },
+        'required': ['recommendations'],
+    },
+}
 
 
 def _get_client():
-    api_key = getattr(settings, 'OPENAI_API_KEY', '')
+    api_key = getattr(settings, 'ANTHROPIC_API_KEY', '')
     if not api_key:
-        raise RuntimeError('OPENAI_API_KEY is not configured')
-    return OpenAI(api_key=api_key)
+        raise RuntimeError('ANTHROPIC_API_KEY is not configured')
+    return Anthropic(api_key=api_key)
 
 
 def _get_unassigned_events(user, limit=30):
@@ -66,21 +89,20 @@ def _build_user_profile(user):
 
 def _build_prompt(user_profile, events_payload):
     return (
-        "You are a volunteering recommendation engine. "
-        "Given a volunteer's profile and a list of available volunteering events, "
-        "select the events that best match the volunteer's interests and skills.\n\n"
-        f"Volunteer profile:\n{json.dumps(user_profile, ensure_ascii=False)}\n\n"
-        f"Available events:\n{json.dumps(events_payload, ensure_ascii=False)}\n\n"
-        "Return ONLY a JSON object with a single key \"recommendations\", whose value is "
-        "an array of objects with keys \"event_id\" (string), \"match_score\" (number 0-100), "
-        "and \"reason\" (short string explaining the match in Russian). "
-        "Only include events with match_score >= 40. Order by match_score descending."
+        "Ты — система рекомендаций волонтёрских мероприятий. "
+        "На основе профиля волонтёра и списка доступных мероприятий выбери те, "
+        "которые лучше всего соответствуют его интересам и навыкам.\n\n"
+        f"Профиль волонтёра:\n{json.dumps(user_profile, ensure_ascii=False)}\n\n"
+        f"Доступные мероприятия:\n{json.dumps(events_payload, ensure_ascii=False)}\n\n"
+        "Вызови инструмент submit_recommendations со списком мероприятий, у которых "
+        "match_score >= 40, отсортированных по убыванию match_score. Поле reason — "
+        "короткое объяснение причины совпадения на русском языке."
     )
 
 
 def generate_recommendations_for_user(user, limit=30):
     """
-    Call the OpenAI API to score unassigned events for a user and persist
+    Call the Anthropic API to score unassigned events for a user and persist
     the results as EventRecommendation rows.
 
     Returns the list of EventRecommendation instances created/updated.
@@ -94,24 +116,21 @@ def generate_recommendations_for_user(user, limit=30):
     client = _get_client()
     prompt = _build_prompt(_build_user_profile(user), _build_event_payload(events))
 
-    response = client.chat.completions.create(
+    response = client.messages.create(
         model=RECOMMENDATION_MODEL,
-        messages=[
-            {'role': 'system', 'content': 'You respond only with valid JSON.'},
-            {'role': 'user', 'content': prompt},
-        ],
-        response_format={'type': 'json_object'},
+        max_tokens=2048,
         temperature=0.3,
+        tools=[RECOMMENDATION_TOOL],
+        tool_choice={'type': 'tool', 'name': 'submit_recommendations'},
+        messages=[{'role': 'user', 'content': prompt}],
     )
 
-    content = response.choices[0].message.content
-    try:
-        data = json.loads(content)
-    except (json.JSONDecodeError, TypeError) as exc:
-        logger.error(f'Failed to parse OpenAI recommendation response: {exc}')
+    tool_use = next((block for block in response.content if block.type == 'tool_use'), None)
+    if tool_use is None:
+        logger.error('Anthropic recommendation response did not contain a tool_use block')
         return []
 
-    recommendations_data = data.get('recommendations', [])
+    recommendations_data = tool_use.input.get('recommendations', [])
 
     results = []
     for item in recommendations_data:

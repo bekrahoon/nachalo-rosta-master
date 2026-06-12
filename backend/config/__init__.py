@@ -39,6 +39,14 @@ app.conf.beat_schedule = {
         'task': 'apps.recommendations.tasks.generate_recommendations_for_all_users',
         'schedule': crontab(hour=3, minute=0),  # Daily at 3 AM
     },
+    'aggregator-poll-due-sources': {
+        'task': 'apps.aggregator.tasks.poll_due_sources',
+        'schedule': crontab(minute='*/15'),  # Every 15 min; per-source cadence is Source.poll_interval_minutes
+    },
+    'aggregator-classify-pending': {
+        'task': 'apps.aggregator.tasks.classify_pending_items',
+        'schedule': crontab(minute='*/10'),  # Every 10 min: AI-классификация новых RawItem
+    },
 }
 
 @app.task(bind=True)

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'apps.teams',
     'apps.impact',
     'apps.core',
+    'apps.aggregator',
 ]
 
 MIDDLEWARE = [
@@ -278,10 +279,34 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
 
 # ============================================================================
-# AI / OpenAI Configuration
+# AI / LLM Configuration
 # ============================================================================
 
 OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
+ANTHROPIC_API_KEY = config('ANTHROPIC_API_KEY', default='')
+
+# Провайдер для AI-классификации объявлений агрегатора: 'openai' | 'anthropic'
+AI_CLASSIFIER_PROVIDER = config('AI_CLASSIFIER_PROVIDER', default='anthropic')
+AI_CLASSIFIER_MODEL = config(
+    'AI_CLASSIFIER_MODEL',
+    default='claude-haiku-4-5-20251001',
+)
+
+# ============================================================================
+# Aggregator (сбор объявлений из внешних источников)
+# ============================================================================
+
+# Токен для Timepad API (https://dev.timepad.ru/) — без него коллектор Timepad
+# пропускает источник.
+TIMEPAD_API_TOKEN = config('TIMEPAD_API_TOKEN', default='')
+
+# Минимальная уверенность AI (0-1), при которой объявление из источника с
+# trust_level=TRUSTED публикуется автоматически. Иначе — на модерацию.
+AGGREGATOR_AUTO_PUBLISH_CONFIDENCE = config('AGGREGATOR_AUTO_PUBLISH_CONFIDENCE', default=0.75, cast=float)
+
+# Порог spam_score (0-1), начиная с которого объявление считается спамом и
+# отфильтровывается без создания Listing.
+AGGREGATOR_SPAM_THRESHOLD = config('AGGREGATOR_SPAM_THRESHOLD', default=0.5, cast=float)
 
 # ============================================================================
 # drf-spectacular (API Documentation)

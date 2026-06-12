@@ -9,6 +9,7 @@ import {
   Profile,
   Settings,
   Events,
+  Opportunities,
   Achievements,
   Portfolio,
   Recommendations,
@@ -61,6 +62,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Events />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'opportunities',
+        element: (
+          <ProtectedRoute>
+            <Opportunities />
           </ProtectedRoute>
         ),
       },

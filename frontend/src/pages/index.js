@@ -5,6 +5,7 @@ export { default as Dashboard } from './Dashboard';
 export { default as Profile } from './Profile';
 export { default as Settings } from './Settings';
 export { default as Events } from './Events';
+export { default as Opportunities } from './Opportunities';
 export { default as Achievements } from './Achievements';
 export { default as Portfolio } from './Portfolio';
 export { default as Recommendations } from './Recommendations';

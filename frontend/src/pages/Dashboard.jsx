@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
-import { TrendingUp, Users, Trophy, BookOpen } from 'lucide-react';
+import { TrendingUp, Users, Trophy, BookOpen, Globe } from 'lucide-react';
 
 export const Dashboard = () => {
   const { user, getProfile } = useAuth();
@@ -13,6 +13,12 @@ export const Dashboard = () => {
   }, [user, getProfile]);
 
   const features = [
+    {
+      icon: Globe,
+      title: 'Возможности',
+      description: 'Волонтёрство, хакатоны, олимпиады и гранты из реальных источников',
+      href: '/opportunities',
+    },
     {
       icon: TrendingUp,
       title: 'AI Рекомендации',
