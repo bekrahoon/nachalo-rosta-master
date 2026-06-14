@@ -4640,3 +4640,100 @@ Traceback (most recent call last):
   File "/app/apps/aggregator/classifier.py", line 171, in _classify_openai_compatible
     raise ValueError(f'Empty response from model {settings.AI_CLASSIFIER_MODEL!r}')
 ValueError: Empty response from model 'openai/gpt-oss-120b:free'
+INFO 2026-06-14 10:38:25,276 signals 10 140061027058496 User updated: umurzhanov_a@iuca.kg
+INFO 2026-06-14 10:42:00,773 services 8 140587722146624 Generated 5 recommendations for bekrahoon12@gmail.com
+INFO 2026-06-14 10:43:04,186 signals 11 140061027058496 User updated: bekrahoon12@gmail.com
+INFO 2026-06-14 10:51:14,926 _client 31 139800994636608 HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+INFO 2026-06-14 10:51:17,097 services 31 139800994636608 Generated 0 recommendations for organizer@nachalo-rosta.local
+INFO 2026-06-14 10:51:30,733 _client 45 139770538881856 HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+INFO 2026-06-14 10:52:00,644 _client 53 139957206356800 HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+INFO 2026-06-14 10:52:32,455 _client 61 140586305827648 HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+INFO 2026-06-14 10:53:18,625 _client 69 140061950485312 HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+WARNING 2026-06-14 10:53:33,905 services 69 140061950485312 OpenRouter returned invalid JSON for recommendations (attempt 1)
+INFO 2026-06-14 10:53:35,349 _client 69 140061950485312 HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+INFO 2026-06-14 10:54:02,521 services 69 140061950485312 Generated 7 recommendations for bekrahoon12@gmail.com
+INFO 2026-06-14 10:54:04,248 _client 69 140061950485312 HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+INFO 2026-06-14 10:54:17,256 services 69 140061950485312 Generated 5 recommendations for uitest@example.com
+INFO 2026-06-14 11:00:00,021 tasks 8 140587722146624 Event statuses updated: 0 started, 0 completed
+INFO 2026-06-14 11:21:19,613 signals 11 140496161018688 User updated: bekrahoon12@gmail.com
+INFO 2026-06-14 11:27:09,870 _client 25 140205234365248 HTTP Request: GET https://t.me/s/hackathons "HTTP/1.1 200 OK"
+INFO 2026-06-14 11:27:10,795 _client 25 140205234365248 HTTP Request: GET https://t.me/s/RussianHackers_Channel "HTTP/1.1 200 OK"
+INFO 2026-06-14 11:27:11,755 _client 25 140205234365248 HTTP Request: GET https://t.me/s/vsekonkursy "HTTP/1.1 200 OK"
+INFO 2026-06-14 11:27:12,568 _client 25 140205234365248 HTTP Request: GET https://t.me/s/grants_scholarships "HTTP/1.1 200 OK"
+INFO 2026-06-14 11:27:21,247 _client 31 140226751263552 HTTP Request: GET https://t.me/s/vsekonkursy "HTTP/1.1 200 OK"
+INFO 2026-06-14 11:27:22,583 _client 31 140226751263552 HTTP Request: GET https://t.me/s/grants_scholarships "HTTP/1.1 200 OK"
+ERROR 2026-06-14 11:27:59,329 tasks 9 139643856913216 Ошибка AI-классификации RawItem c2193e20-b937-44c9-a4fb-abfaaf047c80
+Traceback (most recent call last):
+  File "/app/apps/aggregator/tasks.py", line 163, in classify_raw_item
+    result = classifier.classify_raw_item(raw_item)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/apps/aggregator/classifier.py", line 226, in classify_raw_item
+    return _classify_openrouter(raw_item)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/apps/aggregator/classifier.py", line 181, in _classify_openrouter
+    return _classify_openai_compatible(raw_item, api_key, settings.OPENROUTER_API_BASE)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/apps/aggregator/classifier.py", line 171, in _classify_openai_compatible
+    raise ValueError(f'Empty response from model {settings.AI_CLASSIFIER_MODEL!r}')
+ValueError: Empty response from model 'openai/gpt-oss-120b:free'
+ERROR 2026-06-14 11:28:17,041 tasks 12 139643856913216 Ошибка AI-классификации RawItem 7b23f883-ec54-40c3-bd30-6a9beea90a53
+Traceback (most recent call last):
+  File "/app/apps/aggregator/tasks.py", line 163, in classify_raw_item
+    result = classifier.classify_raw_item(raw_item)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/apps/aggregator/classifier.py", line 226, in classify_raw_item
+    return _classify_openrouter(raw_item)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/apps/aggregator/classifier.py", line 181, in _classify_openrouter
+    return _classify_openai_compatible(raw_item, api_key, settings.OPENROUTER_API_BASE)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/apps/aggregator/classifier.py", line 169, in _classify_openai_compatible
+    content = response.choices[0].message.content
+              ~~~~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+ERROR 2026-06-14 11:28:34,446 tasks 9 139643856913216 Ошибка AI-классификации RawItem 6eee9c1e-84b1-4417-8ad0-542f6e264dac
+Traceback (most recent call last):
+  File "/app/apps/aggregator/tasks.py", line 163, in classify_raw_item
+    result = classifier.classify_raw_item(raw_item)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/apps/aggregator/classifier.py", line 226, in classify_raw_item
+    return _classify_openrouter(raw_item)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/apps/aggregator/classifier.py", line 181, in _classify_openrouter
+    return _classify_openai_compatible(raw_item, api_key, settings.OPENROUTER_API_BASE)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/apps/aggregator/classifier.py", line 173, in _classify_openai_compatible
+    return json.loads(content)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+ERROR 2026-06-14 11:29:16,892 tasks 11 139643856913216 Ошибка AI-классификации RawItem 6eee9c1e-84b1-4417-8ad0-542f6e264dac
+Traceback (most recent call last):
+  File "/app/apps/aggregator/tasks.py", line 163, in classify_raw_item
+    result = classifier.classify_raw_item(raw_item)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/apps/aggregator/classifier.py", line 226, in classify_raw_item
+    return _classify_openrouter(raw_item)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/apps/aggregator/classifier.py", line 181, in _classify_openrouter
+    return _classify_openai_compatible(raw_item, api_key, settings.OPENROUTER_API_BASE)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/apps/aggregator/classifier.py", line 173, in _classify_openai_compatible
+    return json.loads(content)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)

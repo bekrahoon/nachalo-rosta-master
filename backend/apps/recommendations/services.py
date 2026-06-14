@@ -1,5 +1,5 @@
 """
-AI-powered event recommendation service using OpenRouter
+AI-powered recommendation service for aggregator listings using OpenRouter
 (OpenAI-compatible endpoint, free-tier models).
 """
 
@@ -7,11 +7,10 @@ import json
 import logging
 
 from django.conf import settings
-from django.utils import timezone
 
 from openai import OpenAI
 
-from apps.events.models import Event, EventStatus
+from apps.aggregator.models import Listing, ListingStatus
 from .models import EventRecommendation
 
 logger = logging.getLogger(__name__)
@@ -22,7 +21,7 @@ RECOMMENDATION_TOOL = {
     'type': 'function',
     'function': {
         'name': 'submit_recommendations',
-        'description': 'Сохранить список рекомендованных волонтёру мероприятий.',
+        'description': 'Сохранить список рекомендованных пользователю объявлений (волонтёрство, гранты, мероприятия и т.д.).',
         'parameters': {
             'type': 'object',
             'properties': {
@@ -31,11 +30,11 @@ RECOMMENDATION_TOOL = {
                     'items': {
                         'type': 'object',
                         'properties': {
-                            'event_id': {'type': 'string'},
+                            'listing_id': {'type': 'string'},
                             'match_score': {'type': 'number', 'minimum': 0, 'maximum': 100},
                             'reason': {'type': 'string'},
                         },
-                        'required': ['event_id', 'match_score', 'reason'],
+                        'required': ['listing_id', 'match_score', 'reason'],
                     },
                 },
             },
@@ -52,33 +51,30 @@ def _get_client():
     return OpenAI(api_key=api_key, base_url=settings.OPENROUTER_API_BASE)
 
 
-def _get_unassigned_events(user, limit=30):
+def _get_candidate_listings(user, limit=40):
     """
-    Events the user hasn't joined yet, that are upcoming and still open.
+    Published aggregator listings not yet recommended to the user.
     """
     return (
-        Event.objects.filter(
-            status__in=[EventStatus.UPCOMING, EventStatus.ONGOING],
-            start_date__gte=timezone.now(),
-        )
-        .exclude(eventvolunteer__volunteer=user)
-        .order_by('start_date')[:limit]
+        Listing.objects.filter(status=ListingStatus.PUBLISHED)
+        .exclude(recommendations__user=user)
+        .order_by('-created_at')[:limit]
     )
 
 
-def _build_event_payload(events):
+def _build_listing_payload(listings):
     return [
         {
-            'id': str(event.id),
-            'title': event.title,
-            'description': (event.description or '')[:300],
-            'category': event.get_category_display(),
-            'location': event.location,
-            'required_skills': event.required_skills,
-            'volunteer_hours': event.volunteer_hours,
-            'start_date': event.start_date.isoformat(),
+            'id': str(listing.id),
+            'title': listing.title,
+            'description': (listing.description or '')[:300],
+            'listing_type': listing.get_listing_type_display(),
+            'organization': listing.organization_name,
+            'region': listing.region,
+            'is_online': listing.is_online,
+            'tags': [tag.name for tag in listing.tags.all()],
         }
-        for event in events
+        for listing in listings
     ]
 
 
@@ -91,57 +87,66 @@ def _build_user_profile(user):
     }
 
 
-def _build_prompt(user_profile, events_payload):
+def _build_prompt(user_profile, listings_payload):
     return (
-        "Ты — система рекомендаций волонтёрских мероприятий. "
-        "На основе профиля волонтёра и списка доступных мероприятий выбери те, "
+        "Ты — система рекомендаций для платформы-агрегатора волонтёрских программ, "
+        "грантов, стажировок, хакатонов и образовательных возможностей для студентов. "
+        "На основе профиля пользователя и списка доступных объявлений выбери те, "
         "которые лучше всего соответствуют его интересам и навыкам.\n\n"
-        f"Профиль волонтёра:\n{json.dumps(user_profile, ensure_ascii=False)}\n\n"
-        f"Доступные мероприятия:\n{json.dumps(events_payload, ensure_ascii=False)}\n\n"
-        "Вызови инструмент submit_recommendations со списком мероприятий, у которых "
+        f"Профиль пользователя:\n{json.dumps(user_profile, ensure_ascii=False)}\n\n"
+        f"Доступные объявления:\n{json.dumps(listings_payload, ensure_ascii=False)}\n\n"
+        "Вызови инструмент submit_recommendations со списком объявлений, у которых "
         "match_score >= 40, отсортированных по убыванию match_score. Поле reason — "
         "короткое объяснение причины совпадения на русском языке."
     )
 
 
-def generate_recommendations_for_user(user, limit=30):
+def generate_recommendations_for_user(user, limit=40):
     """
-    Call the OpenRouter API to score unassigned events for a user and persist
+    Call the OpenRouter API to score published listings for a user and persist
     the results as EventRecommendation rows.
 
     Returns the list of EventRecommendation instances created/updated.
     """
-    events = list(_get_unassigned_events(user, limit=limit))
-    if not events:
+    listings = list(_get_candidate_listings(user, limit=limit))
+    if not listings:
         return []
 
-    events_by_id = {str(event.id): event for event in events}
+    listings_by_id = {str(listing.id): listing for listing in listings}
 
     client = _get_client()
-    prompt = _build_prompt(_build_user_profile(user), _build_event_payload(events))
+    prompt = _build_prompt(_build_user_profile(user), _build_listing_payload(listings))
 
-    response = client.chat.completions.create(
-        model=RECOMMENDATION_MODEL,
-        max_tokens=2048,
-        temperature=0.3,
-        tools=[RECOMMENDATION_TOOL],
-        tool_choice={'type': 'function', 'function': {'name': 'submit_recommendations'}},
-        messages=[{'role': 'user', 'content': prompt}],
-    )
+    recommendations_data = []
+    for attempt in range(2):
+        response = client.chat.completions.create(
+            model=RECOMMENDATION_MODEL,
+            max_tokens=2048,
+            temperature=0.3,
+            tools=[RECOMMENDATION_TOOL],
+            tool_choice={'type': 'function', 'function': {'name': 'submit_recommendations'}},
+            messages=[{'role': 'user', 'content': prompt}],
+        )
 
-    tool_calls = response.choices[0].message.tool_calls
-    if not tool_calls:
-        logger.error('OpenRouter recommendation response did not contain a tool call')
-        return []
+        tool_calls = response.choices[0].message.tool_calls
+        if not tool_calls:
+            logger.error('OpenRouter recommendation response did not contain a tool call')
+            continue
 
-    tool_input = json.loads(tool_calls[0].function.arguments)
-    recommendations_data = tool_input.get('recommendations', [])
+        try:
+            tool_input = json.loads(tool_calls[0].function.arguments)
+        except json.JSONDecodeError:
+            logger.warning('OpenRouter returned invalid JSON for recommendations (attempt %d)', attempt + 1)
+            continue
+
+        recommendations_data = tool_input.get('recommendations', [])
+        break
 
     results = []
     for item in recommendations_data:
-        event_id = str(item.get('event_id', ''))
-        event = events_by_id.get(event_id)
-        if not event:
+        listing_id = str(item.get('listing_id', ''))
+        listing = listings_by_id.get(listing_id)
+        if not listing:
             continue
 
         try:
@@ -152,7 +157,7 @@ def generate_recommendations_for_user(user, limit=30):
 
         recommendation, _created = EventRecommendation.objects.update_or_create(
             user=user,
-            event=event,
+            listing=listing,
             defaults={
                 'match_score': match_score,
                 'reason': str(item.get('reason', ''))[:1000],

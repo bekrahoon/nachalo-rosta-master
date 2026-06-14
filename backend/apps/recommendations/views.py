@@ -16,7 +16,8 @@ class MyRecommendationsView(generics.ListAPIView):
     def get_queryset(self):
         return (
             EventRecommendation.objects.filter(user=self.request.user)
-            .select_related('event', 'event__organizer')
+            .select_related('listing')
+            .prefetch_related('listing__tags')
         )
 
 

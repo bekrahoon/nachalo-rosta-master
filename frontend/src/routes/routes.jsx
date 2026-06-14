@@ -9,7 +9,6 @@ import {
   Profile,
   Settings,
   Events,
-  EventDetail,
   Opportunities,
   Achievements,
   Portfolio,
@@ -63,14 +62,6 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Events />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'events/:id',
-        element: (
-          <ProtectedRoute>
-            <EventDetail />
           </ProtectedRoute>
         ),
       },

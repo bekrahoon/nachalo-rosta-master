@@ -4,13 +4,13 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 
-from apps.events.models import Event
+from apps.aggregator.models import Listing
 
 User = get_user_model()
 
 
 class EventRecommendation(models.Model):
-    """AI-сгенерированная рекомендация события для пользователя"""
+    """AI-сгенерированная рекомендация объявления для пользователя"""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
@@ -20,11 +20,11 @@ class EventRecommendation(models.Model):
         related_name='recommendations',
         verbose_name=_('пользователь'),
     )
-    event = models.ForeignKey(
-        Event,
+    listing = models.ForeignKey(
+        Listing,
         on_delete=models.CASCADE,
         related_name='recommendations',
-        verbose_name=_('событие'),
+        verbose_name=_('объявление'),
     )
 
     match_score = models.FloatField(
@@ -37,13 +37,13 @@ class EventRecommendation(models.Model):
     created_at = models.DateTimeField(_('создано'), auto_now_add=True)
 
     class Meta:
-        verbose_name = _('рекомендация события')
-        verbose_name_plural = _('рекомендации событий')
-        unique_together = ('user', 'event')
+        verbose_name = _('рекомендация объявления')
+        verbose_name_plural = _('рекомендации объявлений')
+        unique_together = ('user', 'listing')
         ordering = ['-match_score', '-created_at']
         indexes = [
             models.Index(fields=['user', '-match_score']),
         ]
 
     def __str__(self):
-        return f'{self.user.email} -> {self.event.title} ({self.match_score}%)'
+        return f'{self.user.email} -> {self.listing.title} ({self.match_score}%)'
