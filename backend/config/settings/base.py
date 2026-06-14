@@ -285,11 +285,32 @@ CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
 OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
 ANTHROPIC_API_KEY = config('ANTHROPIC_API_KEY', default='')
 
-# Провайдер для AI-классификации объявлений агрегатора: 'openai' | 'anthropic'
-AI_CLASSIFIER_PROVIDER = config('AI_CLASSIFIER_PROVIDER', default='anthropic')
+# Grok (xAI) — OpenAI-совместимый API (https://docs.x.ai/)
+GROK_API_KEY = config('GROK_API_KEY', default='')
+GROK_API_BASE = config('GROK_API_BASE', default='https://api.x.ai/v1')
+
+# Google Gemini — OpenAI-совместимый API
+# (https://ai.google.dev/gemini-api/docs/openai), бесплатный тариф
+GEMINI_API_KEY = config('GEMINI_API_KEY', default='')
+GEMINI_API_BASE = config(
+    'GEMINI_API_BASE',
+    default='https://generativelanguage.googleapis.com/v1beta/openai/',
+)
+
+# OpenRouter — OpenAI-совместимый API с бесплатными моделями
+# (https://openrouter.ai/docs)
+OPENROUTER_API_KEY = config('OPENROUTER_API_KEY', default='')
+OPENROUTER_API_BASE = config(
+    'OPENROUTER_API_BASE',
+    default='https://openrouter.ai/api/v1',
+)
+
+# Провайдер для AI-классификации объявлений агрегатора:
+# 'openrouter' | 'gemini' | 'grok' | 'openai' | 'anthropic'
+AI_CLASSIFIER_PROVIDER = config('AI_CLASSIFIER_PROVIDER', default='openrouter')
 AI_CLASSIFIER_MODEL = config(
     'AI_CLASSIFIER_MODEL',
-    default='claude-haiku-4-5-20251001',
+    default='openai/gpt-oss-120b:free',
 )
 
 # ============================================================================

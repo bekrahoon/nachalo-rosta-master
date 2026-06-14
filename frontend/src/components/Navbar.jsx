@@ -17,6 +17,26 @@ export const Navbar = () => {
         <Link to="/" className="btn btn-ghost normal-case text-xl">
           🚀 Начало Роста
         </Link>
+
+        {isAuthenticated && (
+          <div className="hidden md:flex gap-1 ml-4">
+            <Link to="/dashboard" className="btn btn-ghost btn-sm">
+              Главная
+            </Link>
+            <Link to="/events" className="btn btn-ghost btn-sm">
+              Мероприятия
+            </Link>
+            <Link to="/opportunities" className="btn btn-ghost btn-sm">
+              Возможности
+            </Link>
+            <Link to="/recommendations" className="btn btn-ghost btn-sm">
+              AI Рекомендации
+            </Link>
+            <Link to="/achievements" className="btn btn-ghost btn-sm">
+              Достижения
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="flex-none">

@@ -1,10 +1,17 @@
 """
 AI-классификация RawItem (Этап 2).
 
-Поддерживает два провайдера через settings.AI_CLASSIFIER_PROVIDER:
-- 'anthropic' (по умолчанию) — structured output через tool-use с
-  принудительным вызовом инструмента (tool_choice).
+Поддерживает несколько провайдеров через settings.AI_CLASSIFIER_PROVIDER:
+- 'openrouter' (по умолчанию) — OpenRouter (бесплатные модели) через
+  OpenAI-совместимый API, structured output через
+  response_format={'type': 'json_object'}.
+- 'gemini' — Google Gemini через OpenAI-совместимый API,
+  structured output через response_format={'type': 'json_object'}.
+- 'grok' — xAI Grok через OpenAI-совместимый API,
+  structured output через response_format={'type': 'json_object'}.
 - 'openai' — structured output через response_format={'type': 'json_object'}.
+- 'anthropic' — structured output через tool-use с принудительным вызовом
+  инструмента (tool_choice).
 
 Перед вызовом AI имеет смысл прогнать текст через looks_relevant(), чтобы не
 тратить запросы на явно нерелевантные посты.
@@ -145,14 +152,10 @@ def _classify_anthropic(raw_item) -> dict:
     return tool_use.input
 
 
-def _classify_openai(raw_item) -> dict:
+def _classify_openai_compatible(raw_item, api_key: str, base_url: str | None) -> dict:
     from openai import OpenAI
 
-    api_key = getattr(settings, 'OPENAI_API_KEY', '')
-    if not api_key:
-        raise RuntimeError('OPENAI_API_KEY is not configured')
-
-    client = OpenAI(api_key=api_key)
+    client = OpenAI(api_key=api_key, base_url=base_url)
     response = client.chat.completions.create(
         model=settings.AI_CLASSIFIER_MODEL,
         temperature=0,
@@ -163,7 +166,43 @@ def _classify_openai(raw_item) -> dict:
         ],
     )
 
-    return json.loads(response.choices[0].message.content)
+    content = response.choices[0].message.content
+    if not content:
+        raise ValueError(f'Empty response from model {settings.AI_CLASSIFIER_MODEL!r}')
+
+    return json.loads(content)
+
+
+def _classify_openrouter(raw_item) -> dict:
+    api_key = getattr(settings, 'OPENROUTER_API_KEY', '')
+    if not api_key:
+        raise RuntimeError('OPENROUTER_API_KEY is not configured')
+
+    return _classify_openai_compatible(raw_item, api_key, settings.OPENROUTER_API_BASE)
+
+
+def _classify_gemini(raw_item) -> dict:
+    api_key = getattr(settings, 'GEMINI_API_KEY', '')
+    if not api_key:
+        raise RuntimeError('GEMINI_API_KEY is not configured')
+
+    return _classify_openai_compatible(raw_item, api_key, settings.GEMINI_API_BASE)
+
+
+def _classify_grok(raw_item) -> dict:
+    api_key = getattr(settings, 'GROK_API_KEY', '')
+    if not api_key:
+        raise RuntimeError('GROK_API_KEY is not configured')
+
+    return _classify_openai_compatible(raw_item, api_key, settings.GROK_API_BASE)
+
+
+def _classify_openai(raw_item) -> dict:
+    api_key = getattr(settings, 'OPENAI_API_KEY', '')
+    if not api_key:
+        raise RuntimeError('OPENAI_API_KEY is not configured')
+
+    return _classify_openai_compatible(raw_item, api_key, None)
 
 
 def classify_raw_item(raw_item) -> dict:
@@ -171,10 +210,17 @@ def classify_raw_item(raw_item) -> dict:
     Классифицирует RawItem через настроенный AI-провайдер.
 
     Возвращает dict, соответствующий CLASSIFICATION_SCHEMA. При смене
-    провайдера на 'openai' не забудьте задать соответствующую модель в
-    AI_CLASSIFIER_MODEL (по умолчанию там указана модель Anthropic).
+    провайдера не забудьте задать соответствующую модель в
+    AI_CLASSIFIER_MODEL (по умолчанию там указана бесплатная модель
+    OpenRouter).
     """
-    provider = getattr(settings, 'AI_CLASSIFIER_PROVIDER', 'anthropic')
+    provider = getattr(settings, 'AI_CLASSIFIER_PROVIDER', 'openrouter')
     if provider == 'openai':
         return _classify_openai(raw_item)
-    return _classify_anthropic(raw_item)
+    if provider == 'anthropic':
+        return _classify_anthropic(raw_item)
+    if provider == 'grok':
+        return _classify_grok(raw_item)
+    if provider == 'gemini':
+        return _classify_gemini(raw_item)
+    return _classify_openrouter(raw_item)

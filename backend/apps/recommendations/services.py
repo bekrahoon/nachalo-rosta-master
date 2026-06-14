@@ -1,5 +1,6 @@
 """
-AI-powered event recommendation service using the Anthropic API.
+AI-powered event recommendation service using OpenRouter
+(OpenAI-compatible endpoint, free-tier models).
 """
 
 import json
@@ -8,44 +9,47 @@ import logging
 from django.conf import settings
 from django.utils import timezone
 
-from anthropic import Anthropic
+from openai import OpenAI
 
 from apps.events.models import Event, EventStatus
 from .models import EventRecommendation
 
 logger = logging.getLogger(__name__)
 
-RECOMMENDATION_MODEL = 'claude-haiku-4-5-20251001'
+RECOMMENDATION_MODEL = 'openai/gpt-oss-120b:free'
 
 RECOMMENDATION_TOOL = {
-    'name': 'submit_recommendations',
-    'description': 'Сохранить список рекомендованных волонтёру мероприятий.',
-    'input_schema': {
-        'type': 'object',
-        'properties': {
-            'recommendations': {
-                'type': 'array',
-                'items': {
-                    'type': 'object',
-                    'properties': {
-                        'event_id': {'type': 'string'},
-                        'match_score': {'type': 'number', 'minimum': 0, 'maximum': 100},
-                        'reason': {'type': 'string'},
+    'type': 'function',
+    'function': {
+        'name': 'submit_recommendations',
+        'description': 'Сохранить список рекомендованных волонтёру мероприятий.',
+        'parameters': {
+            'type': 'object',
+            'properties': {
+                'recommendations': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'object',
+                        'properties': {
+                            'event_id': {'type': 'string'},
+                            'match_score': {'type': 'number', 'minimum': 0, 'maximum': 100},
+                            'reason': {'type': 'string'},
+                        },
+                        'required': ['event_id', 'match_score', 'reason'],
                     },
-                    'required': ['event_id', 'match_score', 'reason'],
                 },
             },
+            'required': ['recommendations'],
         },
-        'required': ['recommendations'],
     },
 }
 
 
 def _get_client():
-    api_key = getattr(settings, 'ANTHROPIC_API_KEY', '')
+    api_key = getattr(settings, 'OPENROUTER_API_KEY', '')
     if not api_key:
-        raise RuntimeError('ANTHROPIC_API_KEY is not configured')
-    return Anthropic(api_key=api_key)
+        raise RuntimeError('OPENROUTER_API_KEY is not configured')
+    return OpenAI(api_key=api_key, base_url=settings.OPENROUTER_API_BASE)
 
 
 def _get_unassigned_events(user, limit=30):
@@ -102,7 +106,7 @@ def _build_prompt(user_profile, events_payload):
 
 def generate_recommendations_for_user(user, limit=30):
     """
-    Call the Anthropic API to score unassigned events for a user and persist
+    Call the OpenRouter API to score unassigned events for a user and persist
     the results as EventRecommendation rows.
 
     Returns the list of EventRecommendation instances created/updated.
@@ -116,21 +120,22 @@ def generate_recommendations_for_user(user, limit=30):
     client = _get_client()
     prompt = _build_prompt(_build_user_profile(user), _build_event_payload(events))
 
-    response = client.messages.create(
+    response = client.chat.completions.create(
         model=RECOMMENDATION_MODEL,
         max_tokens=2048,
         temperature=0.3,
         tools=[RECOMMENDATION_TOOL],
-        tool_choice={'type': 'tool', 'name': 'submit_recommendations'},
+        tool_choice={'type': 'function', 'function': {'name': 'submit_recommendations'}},
         messages=[{'role': 'user', 'content': prompt}],
     )
 
-    tool_use = next((block for block in response.content if block.type == 'tool_use'), None)
-    if tool_use is None:
-        logger.error('Anthropic recommendation response did not contain a tool_use block')
+    tool_calls = response.choices[0].message.tool_calls
+    if not tool_calls:
+        logger.error('OpenRouter recommendation response did not contain a tool call')
         return []
 
-    recommendations_data = tool_use.input.get('recommendations', [])
+    tool_input = json.loads(tool_calls[0].function.arguments)
+    recommendations_data = tool_input.get('recommendations', [])
 
     results = []
     for item in recommendations_data:
