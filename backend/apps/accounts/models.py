@@ -84,6 +84,9 @@ class CustomUser(AbstractUser):
         choices=UserRole.choices,
         default=UserRole.USER
     )
+
+    # Отображаемый статус-бейдж в профиле (например, "Стажёр", "Гость")
+    status_label = models.CharField(_('статус-бейдж'), max_length=50, blank=True, default='Гость')
     
     # Email verification
     email_verified = models.BooleanField(_('email verified'), default=False)

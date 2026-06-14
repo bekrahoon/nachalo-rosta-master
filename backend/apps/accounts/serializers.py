@@ -28,7 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'email', 'first_name', 'last_name', 'middle_name',
             'full_name', 'short_name', 'phone', 'bio', 'avatar',
             'date_of_birth', 'country', 'city', 'region',
-            'role', 'email_verified', 'is_organizer', 'is_moderator',
+            'role', 'status_label', 'email_verified', 'is_organizer', 'is_moderator',
             'created_at', 'updated_at', 'last_login_at',
             'receive_emails', 'receive_notifications',
             'interests', 'skills'
@@ -244,7 +244,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = [
             'first_name', 'last_name', 'middle_name', 'phone',
             'bio', 'avatar', 'date_of_birth',
-            'country', 'city', 'region',
+            'country', 'city', 'region', 'status_label',
             'receive_emails', 'receive_notifications',
             'interests', 'skills'
         ]

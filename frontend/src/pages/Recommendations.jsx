@@ -2,8 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { Sparkles, AlertCircle, RefreshCw } from 'lucide-react';
 import apiClient from '../api/client';
 import ListingCard from '../components/ListingCard';
+import useSavedListings from '../hooks/useSavedListings';
 
 export const Recommendations = () => {
+  const { savedIds, toggleSave } = useSavedListings();
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -119,6 +121,8 @@ export const Recommendations = () => {
                 listing={rec.listing}
                 matchScore={rec.match_score}
                 reason={rec.reason}
+                isSaved={savedIds.has(rec.listing.id)}
+                onToggleSave={toggleSave}
               />
             ))}
           </div>

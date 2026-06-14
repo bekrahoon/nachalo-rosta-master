@@ -23,17 +23,11 @@ export const Navbar = () => {
             <Link to="/dashboard" className="btn btn-ghost btn-sm">
               Главная
             </Link>
-            <Link to="/events" className="btn btn-ghost btn-sm">
-              Мероприятия
-            </Link>
             <Link to="/opportunities" className="btn btn-ghost btn-sm">
               Возможности
             </Link>
             <Link to="/recommendations" className="btn btn-ghost btn-sm">
               AI Рекомендации
-            </Link>
-            <Link to="/achievements" className="btn btn-ghost btn-sm">
-              Достижения
             </Link>
           </div>
         )}

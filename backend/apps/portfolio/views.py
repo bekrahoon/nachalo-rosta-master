@@ -1,11 +1,12 @@
-from django.http import HttpResponse
-from django.template.loader import render_to_string
-from rest_framework import permissions
+from django.shortcuts import get_object_or_404
+from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import PortfolioSerializer
-from .services import build_portfolio_context
+from apps.aggregator.models import Listing
+from .models import SavedListing
+from .serializers import PortfolioSerializer, PortfolioProfileSerializer, SavedListingSerializer
+from .services import build_portfolio_context, get_or_create_portfolio_profile
 
 
 class PortfolioSummaryView(APIView):
@@ -19,20 +20,46 @@ class PortfolioSummaryView(APIView):
         return Response(serializer.data)
 
 
-class PortfolioPDFView(APIView):
-    """Скачать портфолио волонтёра в виде PDF"""
+class PortfolioProfileView(APIView):
+    """Просмотр и редактирование настроек отображения портфолио"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request):
+        profile = get_or_create_portfolio_profile(request.user)
+        serializer = PortfolioProfileSerializer(profile, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
+class SavedListingListView(APIView):
+    """Список сохранённых пользователем возможностей и добавление новых"""
 
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        from weasyprint import HTML
+        saved = (
+            SavedListing.objects.filter(user=request.user)
+            .select_related('listing')
+            .prefetch_related('listing__tags')
+            .order_by('-created_at')
+        )
+        serializer = SavedListingSerializer(saved, many=True)
+        return Response(serializer.data)
 
-        context = build_portfolio_context(request.user)
-        html_string = render_to_string('portfolio/portfolio_pdf.html', context)
+    def post(self, request):
+        listing = get_object_or_404(Listing, id=request.data.get('listing'))
+        saved, created = SavedListing.objects.get_or_create(user=request.user, listing=listing)
+        serializer = SavedListingSerializer(saved)
+        return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
-        pdf_bytes = HTML(string=html_string).write_pdf()
 
-        response = HttpResponse(pdf_bytes, content_type='application/pdf')
-        filename = f'portfolio_{request.user.email.split("@")[0]}.pdf'
-        response['Content-Disposition'] = f'attachment; filename="{filename}"'
-        return response
+class SavedListingDetailView(APIView):
+    """Удаление возможности из сохранённых"""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, listing_id):
+        SavedListing.objects.filter(user=request.user, listing_id=listing_id).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

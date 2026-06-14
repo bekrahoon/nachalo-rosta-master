@@ -2,7 +2,16 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
 import { Alert } from '../components';
-import { User, Mail, Phone, MapPin, Edit2, Save, X } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Edit2, X } from 'lucide-react';
+
+const formatDate = (value) => {
+  if (!value) return null;
+  try {
+    return new Date(value).toLocaleDateString('ru-RU');
+  } catch {
+    return null;
+  }
+};
 
 export const Profile = () => {
   const { user, updateProfile, loading, error, message, clearError, clearMessage } = useAuth();
@@ -46,7 +55,7 @@ export const Profile = () => {
                 <h1 className="text-3xl font-bold">{user?.full_name}</h1>
                 <p className="text-gray-600">{user?.email}</p>
                 <div className="badge badge-primary mt-2">
-                  {user?.role === 'organizer' ? '🎯 Организатор' : '🤝 Волонтёр'}
+                  {user?.status_label || 'Гость'}
                 </div>
               </div>
             </div>
@@ -58,22 +67,6 @@ export const Profile = () => {
             </button>
           </div>
 
-          {/* Stats */}
-          <div className="divider my-4" />
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold text-primary">0</div>
-              <div className="text-sm text-gray-600">Часов волонтёрства</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-secondary">0</div>
-              <div className="text-sm text-gray-600">Достижений</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-accent">0</div>
-              <div className="text-sm text-gray-600">Команд</div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -120,6 +113,27 @@ export const Profile = () => {
                   className="input input-bordered"
                   {...register('middle_name')}
                 />
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Статус-бейдж</span>
+                </label>
+                <input
+                  type="text"
+                  className="input input-bordered"
+                  list="status-label-options"
+                  placeholder="Гость"
+                  maxLength={50}
+                  {...register('status_label')}
+                />
+                <datalist id="status-label-options">
+                  <option value="Гость" />
+                  <option value="Волонтёр" />
+                  <option value="Стажёр" />
+                  <option value="Студент" />
+                  <option value="Организатор" />
+                </datalist>
               </div>
 
               <div className="form-control">
@@ -226,6 +240,16 @@ export const Profile = () => {
                 </div>
               </div>
 
+              {user?.middle_name && (
+                <div className="flex items-center gap-2">
+                  <User className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <div className="text-sm text-gray-600">Отчество</div>
+                    <div className="font-semibold">{user?.middle_name}</div>
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center gap-2">
                 <Mail className="w-5 h-5 text-gray-400" />
                 <div>
@@ -244,13 +268,23 @@ export const Profile = () => {
                 </div>
               )}
 
-              {user?.city && (
+              {formatDate(user?.date_of_birth) && (
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <div className="text-sm text-gray-600">Дата рождения</div>
+                    <div className="font-semibold">{formatDate(user?.date_of_birth)}</div>
+                  </div>
+                </div>
+              )}
+
+              {(user?.city || user?.region || user?.country) && (
                 <div className="flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-gray-400" />
                   <div>
                     <div className="text-sm text-gray-600">Локация</div>
                     <div className="font-semibold">
-                      {user?.city}, {user?.country}
+                      {[user?.city, user?.region, user?.country].filter(Boolean).join(', ')}
                     </div>
                   </div>
                 </div>
@@ -272,7 +306,7 @@ export const Profile = () => {
         <a href="/portfolio" className="card bg-base-100 shadow hover:shadow-lg transition cursor-pointer">
           <div className="card-body">
             <h3 className="card-title">📄 Портфолио</h3>
-            <p>Управляйте и экспортируйте ваше портфолио волонтёра</p>
+            <p>Управляйте профилем и сохранёнными возможностями</p>
           </div>
         </a>
         <a href="/settings" className="card bg-base-100 shadow hover:shadow-lg transition cursor-pointer">

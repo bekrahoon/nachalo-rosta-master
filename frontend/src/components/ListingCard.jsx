@@ -1,4 +1,4 @@
-import { MapPin, Calendar, ExternalLink, Globe, Building2, Sparkles } from 'lucide-react';
+import { MapPin, Calendar, ExternalLink, Globe, Building2, Sparkles, Bookmark } from 'lucide-react';
 
 const formatDate = (value) => {
   if (!value) return null;
@@ -9,12 +9,22 @@ const formatDate = (value) => {
   }
 };
 
-export const ListingCard = ({ listing, matchScore, reason }) => {
+export const ListingCard = ({ listing, matchScore, reason, isSaved, onToggleSave }) => {
   const startDate = formatDate(listing.start_date);
   const deadline = formatDate(listing.application_deadline);
 
   return (
     <div className="card bg-base-100 shadow-lg hover:shadow-xl transition relative">
+      {onToggleSave && (
+        <button
+          type="button"
+          className={`btn btn-circle btn-sm absolute top-2 left-2 z-10 ${isSaved ? 'btn-primary' : 'btn-ghost bg-base-100'}`}
+          onClick={() => onToggleSave(listing)}
+          title={isSaved ? 'Убрать из сохранённых' : 'Сохранить'}
+        >
+          <Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} />
+        </button>
+      )}
       {matchScore != null && (
         <div className="absolute top-2 right-2 z-10">
           <div className="radial-progress bg-base-100 text-primary border-2 border-base-100 text-xs" style={{ '--value': matchScore, '--size': '3rem' }}>

@@ -8,9 +8,7 @@ import {
   Dashboard,
   Profile,
   Settings,
-  Events,
   Opportunities,
-  Achievements,
   Portfolio,
   Recommendations,
 } from '../pages';
@@ -58,14 +56,6 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'events',
-        element: (
-          <ProtectedRoute>
-            <Events />
-          </ProtectedRoute>
-        ),
-      },
-      {
         path: 'opportunities',
         element: (
           <ProtectedRoute>
@@ -78,14 +68,6 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Recommendations />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'achievements',
-        element: (
-          <ProtectedRoute>
-            <Achievements />
           </ProtectedRoute>
         ),
       },

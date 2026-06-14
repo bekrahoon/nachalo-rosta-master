@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
-import { TrendingUp, Users, Trophy, BookOpen, Globe } from 'lucide-react';
+import { TrendingUp, Users, BookOpen, Globe } from 'lucide-react';
 
 export const Dashboard = () => {
   const { user, getProfile } = useAuth();
@@ -32,12 +32,6 @@ export const Dashboard = () => {
       href: '/teams/create',
     },
     {
-      icon: Trophy,
-      title: 'Достижения',
-      description: 'Отслеживайте и получайте награды за волонтёрскую деятельность',
-      href: '/achievements',
-    },
-    {
       icon: BookOpen,
       title: 'Портфолио',
       description: 'Создайте впечатляющее портфолио волонтёрского опыта',
@@ -59,44 +53,14 @@ export const Dashboard = () => {
               которые соответствуют вашим интересам и ценностям.
             </p>
             <div className="flex gap-4 justify-center">
-              <Link to="/events" className="btn btn-outline btn-white">
-                Обновить события
+              <Link to="/opportunities" className="btn btn-outline btn-white">
+                Найти возможности
               </Link>
               <Link to="/profile" className="btn btn-white">
                 Завершить профиль
               </Link>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="stat bg-base-100 shadow rounded-lg">
-          <div className="stat-figure text-primary">
-            <Users className="w-8 h-8" />
-          </div>
-          <div className="stat-title">Часов волонтёрства</div>
-          <div className="stat-value text-primary">0</div>
-          <div className="stat-desc">Этот месяц</div>
-        </div>
-
-        <div className="stat bg-base-100 shadow rounded-lg">
-          <div className="stat-figure text-secondary">
-            <Trophy className="w-8 h-8" />
-          </div>
-          <div className="stat-title">Достижений</div>
-          <div className="stat-value text-secondary">0</div>
-          <div className="stat-desc">Всего</div>
-        </div>
-
-        <div className="stat bg-base-100 shadow rounded-lg">
-          <div className="stat-figure text-accent">
-            <TrendingUp className="w-8 h-8" />
-          </div>
-          <div className="stat-title">Социальное влияние</div>
-          <div className="stat-value text-accent">0</div>
-          <div className="stat-desc">Балл</div>
         </div>
       </section>
 
