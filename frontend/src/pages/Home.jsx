@@ -31,13 +31,13 @@ export const Home = () => {
   return (
     <div className="space-y-0">
       {/* Hero Section */}
-      <section className="hero min-h-[80vh] bg-gradient-to-br from-primary via-accent to-secondary text-white">
+      <section className="hero min-h-[60vh] md:min-h-[80vh] bg-gradient-to-br from-primary via-accent to-secondary text-white px-4">
         <div className="hero-content text-center">
           <div className="max-w-2xl">
-            <h1 className="text-6xl font-bold mb-6">
-              🚀 Начало Роста: Влияние
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 md:mb-6">
+              Начало Роста: Влияние
             </h1>
-            <p className="text-2xl mb-8 leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl mb-6 md:mb-8 leading-relaxed">
               Платформа для молодёжного волонтёрства, социальных инициатив
               и развития в Центральной Азии
             </p>
@@ -62,11 +62,11 @@ export const Home = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 px-4 bg-base-100">
+      <section className="py-12 md:py-20 px-4 bg-base-100">
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Почему выбирать нас?</h2>
-            <p className="text-xl text-gray-600">
+          <div className="text-center mb-8 md:mb-16">
+            <h2 className="text-2xl md:text-4xl font-bold mb-4">Почему выбирать нас?</h2>
+            <p className="text-base md:text-xl text-gray-600">
               Всё что нужно для успешного волонтёрства в одной платформе
             </p>
           </div>
@@ -97,17 +97,17 @@ export const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-base-200">
+      <section className="py-12 md:py-20 px-4 bg-base-200">
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Ключевые функции</h2>
+          <div className="text-center mb-8 md:mb-16">
+            <h2 className="text-2xl md:text-4xl font-bold mb-4">Ключевые функции</h2>
           </div>
 
           <div className="space-y-12">
             {/* Feature 1 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div>
-                <h3 className="text-3xl font-bold mb-4">
+                <h3 className="text-xl md:text-3xl font-bold mb-4">
                   AI-Рекомендации
                 </h3>
                 <p className="text-lg text-gray-700 mb-4">
@@ -129,18 +129,18 @@ export const Home = () => {
                   </li>
                 </ul>
               </div>
-              <div className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg h-72 flex items-center justify-center">
-                <Sparkles className="w-32 h-32 text-primary opacity-50" />
+              <div className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg h-48 md:h-72 flex items-center justify-center">
+                <Sparkles className="w-20 h-20 md:w-32 md:h-32 text-primary opacity-50" />
               </div>
             </div>
 
             {/* Feature 2 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              <div className="order-2 md:order-1 bg-gradient-to-br from-secondary/20 to-accent/20 rounded-lg h-72 flex items-center justify-center">
-                <Users className="w-32 h-32 text-secondary opacity-50" />
+              <div className="order-2 md:order-1 bg-gradient-to-br from-secondary/20 to-accent/20 rounded-lg h-48 md:h-72 flex items-center justify-center">
+                <Users className="w-20 h-20 md:w-32 md:h-32 text-secondary opacity-50" />
               </div>
               <div className="order-1 md:order-2">
-                <h3 className="text-3xl font-bold mb-4">
+                <h3 className="text-xl md:text-3xl font-bold mb-4">
                   Совместные заявки
                 </h3>
                 <p className="text-lg text-gray-700 mb-4">
@@ -167,7 +167,7 @@ export const Home = () => {
             {/* Feature 3 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div>
-                <h3 className="text-3xl font-bold mb-4">
+                <h3 className="text-xl md:text-3xl font-bold mb-4">
                   Каталог возможностей
                 </h3>
                 <p className="text-lg text-gray-700 mb-4">
@@ -189,8 +189,8 @@ export const Home = () => {
                   </li>
                 </ul>
               </div>
-              <div className="bg-gradient-to-br from-accent/20 to-primary/20 rounded-lg h-72 flex items-center justify-center">
-                <Target className="w-32 h-32 text-accent opacity-50" />
+              <div className="bg-gradient-to-br from-accent/20 to-primary/20 rounded-lg h-48 md:h-72 flex items-center justify-center">
+                <Target className="w-20 h-20 md:w-32 md:h-32 text-accent opacity-50" />
               </div>
             </div>
           </div>
@@ -198,9 +198,9 @@ export const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-primary to-accent text-white">
+      <section className="py-12 md:py-20 px-4 bg-gradient-to-r from-primary to-accent text-white">
         <div className="container mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">
+          <h2 className="text-2xl md:text-4xl font-bold mb-6">
             Готовы начать?
           </h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
@@ -216,20 +216,20 @@ export const Home = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 px-4 bg-base-100">
+      <section className="py-12 md:py-20 px-4 bg-base-100">
         <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <div className="grid grid-cols-3 gap-4 md:gap-8 text-center">
             <div>
-              <div className="text-5xl font-bold text-primary mb-2">140+</div>
-              <p className="text-xl text-gray-600">Возможностей в каталоге</p>
+              <div className="text-3xl md:text-5xl font-bold text-primary mb-2">140+</div>
+              <p className="text-sm md:text-xl text-gray-600">Возможностей</p>
             </div>
             <div>
-              <div className="text-5xl font-bold text-secondary mb-2">30+</div>
-              <p className="text-xl text-gray-600">Источников данных</p>
+              <div className="text-3xl md:text-5xl font-bold text-secondary mb-2">30+</div>
+              <p className="text-sm md:text-xl text-gray-600">Источников</p>
             </div>
             <div>
-              <div className="text-5xl font-bold text-accent mb-2">5+</div>
-              <p className="text-xl text-gray-600">Стран Центральной Азии</p>
+              <div className="text-3xl md:text-5xl font-bold text-accent mb-2">5+</div>
+              <p className="text-sm md:text-xl text-gray-600">Стран ЦА</p>
             </div>
           </div>
         </div>

@@ -98,7 +98,7 @@ export const Opportunities = () => {
       <div className="hero bg-gradient-to-r from-primary to-accent rounded-lg">
         <div className="hero-content text-white text-center">
           <div>
-            <h1 className="text-4xl font-bold mb-4">Возможности</h1>
+            <h1 className="text-2xl md:text-4xl font-bold mb-4">Возможности</h1>
             <p className="text-lg">
               Волонтёрство, хакатоны, олимпиады, гранты и форумы — собрано из реальных источников
             </p>

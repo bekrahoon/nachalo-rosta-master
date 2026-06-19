@@ -38,7 +38,7 @@ export const Portfolio = () => {
       <div className="hero bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg">
         <div className="hero-content text-white text-center">
           <div>
-            <h1 className="text-4xl font-bold mb-4">
+            <h1 className="text-2xl md:text-4xl font-bold mb-4">
               <Bookmark className="inline w-10 h-10 mr-2 mb-1" />
               Избранное
             </h1>
@@ -68,12 +68,12 @@ export const Portfolio = () => {
               key={saved.id}
               className="card bg-base-100 shadow-lg"
             >
-              <div className="card-body flex-row items-center justify-between gap-4 py-4">
-                <div className="flex-1 min-w-0">
+              <div className="card-body py-4 gap-3">
+                <div className="min-w-0">
                   <div className="badge badge-secondary badge-outline mb-1">
                     {saved.listing.listing_type_display}
                   </div>
-                  <h4 className="font-semibold truncate">{saved.listing.title}</h4>
+                  <h4 className="font-semibold line-clamp-2">{saved.listing.title}</h4>
                   {saved.listing.organization_name && (
                     <p className="text-sm text-gray-600">{saved.listing.organization_name}</p>
                   )}
@@ -81,13 +81,13 @@ export const Portfolio = () => {
                     <p className="text-xs text-gray-400">{saved.listing.region}</p>
                   )}
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-2">
                   {saved.listing.source_url && (
                     <a
                       href={saved.listing.source_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="btn btn-secondary btn-sm gap-1"
+                      className="btn btn-secondary btn-sm gap-1 flex-1 sm:flex-none"
                     >
                       Перейти
                       <ExternalLink className="w-4 h-4" />

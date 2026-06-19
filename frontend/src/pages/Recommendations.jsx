@@ -104,7 +104,7 @@ export const Recommendations = () => {
       <div className="hero bg-gradient-to-r from-blue-400 to-cyan-400 rounded-lg">
         <div className="hero-content text-white text-center">
           <div>
-            <h1 className="text-4xl font-bold mb-4">AI Рекомендации</h1>
+            <h1 className="text-2xl md:text-4xl font-bold mb-4">AI Рекомендации</h1>
             <p className="text-lg">
               Персонализированные возможности с других платформ на основе ваших интересов
             </p>

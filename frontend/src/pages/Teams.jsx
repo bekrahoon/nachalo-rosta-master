@@ -132,7 +132,7 @@ export const Teams = () => {
       <div className="hero bg-gradient-to-r from-secondary to-primary rounded-lg">
         <div className="hero-content text-white text-center">
           <div>
-            <h1 className="text-4xl font-bold mb-4">
+            <h1 className="text-2xl md:text-4xl font-bold mb-4">
               <HeartHandshake className="inline w-10 h-10 mr-2 mb-1" />
               Совместные заявки
             </h1>
