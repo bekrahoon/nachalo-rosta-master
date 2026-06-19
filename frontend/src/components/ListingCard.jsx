@@ -103,14 +103,17 @@ export const ListingCard = ({ listing, matchScore, reason, isSaved, onToggleSave
           </div>
         )}
 
-        <div className="card-actions justify-end pt-2">
+        <div className="card-actions justify-between items-center pt-2">
+          {listing.source_name && (
+            <span className="text-xs text-gray-400 truncate max-w-[40%]">{listing.source_name}</span>
+          )}
           <a
             href={listing.source_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-secondary btn-sm gap-1"
+            className="btn btn-secondary btn-sm gap-1 ml-auto"
           >
-            Перейти к источнику
+            Подробнее
             <ExternalLink className="w-4 h-4" />
           </a>
         </div>

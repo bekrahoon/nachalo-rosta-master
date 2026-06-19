@@ -29,6 +29,9 @@ export const Navbar = () => {
             <Link to="/recommendations" className="btn btn-ghost btn-sm">
               AI Рекомендации
             </Link>
+            <Link to="/teams" className="btn btn-ghost btn-sm">
+              Команды
+            </Link>
           </div>
         )}
       </div>

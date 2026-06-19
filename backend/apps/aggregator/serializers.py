@@ -16,6 +16,7 @@ class ListingSerializer(serializers.ModelSerializer):
 
     listing_type_display = serializers.CharField(source='get_listing_type_display', read_only=True)
     tags = TagSerializer(many=True, read_only=True)
+    source_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Listing
@@ -24,4 +25,10 @@ class ListingSerializer(serializers.ModelSerializer):
             'organization_name', 'region', 'is_online',
             'start_date', 'end_date', 'application_deadline',
             'source_url', 'cover_image_url', 'tags', 'is_featured', 'created_at',
+            'source_name',
         ]
+
+    def get_source_name(self, obj):
+        if obj.raw_item_id and hasattr(obj, 'raw_item') and obj.raw_item:
+            return obj.raw_item.source.name
+        return None

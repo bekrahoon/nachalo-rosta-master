@@ -1,8 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Sparkles, AlertCircle, RefreshCw } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { Sparkles, AlertCircle, RefreshCw, UserCog } from 'lucide-react';
 import apiClient from '../api/client';
 import ListingCard from '../components/ListingCard';
 import useSavedListings from '../hooks/useSavedListings';
+
+const POLL_INTERVAL_MS = 3000;
+const MAX_POLL_ATTEMPTS = 10;
 
 export const Recommendations = () => {
   const { savedIds, toggleSave } = useSavedListings();
@@ -11,6 +15,17 @@ export const Recommendations = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
+  const pollTimerRef = useRef(null);
+  const pollCountRef = useRef(0);
+  const prevCountRef = useRef(null);
+
+  const stopPolling = useCallback(() => {
+    if (pollTimerRef.current) {
+      clearTimeout(pollTimerRef.current);
+      pollTimerRef.current = null;
+    }
+    pollCountRef.current = 0;
+  }, []);
 
   const loadRecommendations = useCallback(() => {
     setLoading(true);
@@ -18,7 +33,11 @@ export const Recommendations = () => {
 
     apiClient
       .get('/recommendations/')
-      .then((res) => setRecommendations(res.data.results || []))
+      .then((res) => {
+        const results = res.data.results || [];
+        setRecommendations(results);
+        prevCountRef.current = results.length;
+      })
       .catch(() => {
         setError('Не удалось загрузить рекомендации. Попробуйте позже.');
         setRecommendations([]);
@@ -26,23 +45,57 @@ export const Recommendations = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  const pollForResults = useCallback(() => {
+    pollCountRef.current += 1;
+
+    if (pollCountRef.current > MAX_POLL_ATTEMPTS) {
+      stopPolling();
+      setRefreshing(false);
+      setMessage('Рекомендации генерируются. Обновите страницу через минуту.');
+      return;
+    }
+
+    apiClient
+      .get('/recommendations/')
+      .then((res) => {
+        const results = res.data.results || [];
+        if (results.length !== prevCountRef.current) {
+          setRecommendations(results);
+          prevCountRef.current = results.length;
+          stopPolling();
+          setRefreshing(false);
+          setMessage('Рекомендации успешно обновлены!');
+        } else {
+          pollTimerRef.current = setTimeout(pollForResults, POLL_INTERVAL_MS);
+        }
+      })
+      .catch(() => {
+        pollTimerRef.current = setTimeout(pollForResults, POLL_INTERVAL_MS);
+      });
+  }, [stopPolling]);
+
   useEffect(() => {
     loadRecommendations();
-  }, [loadRecommendations]);
+    return () => stopPolling();
+  }, [loadRecommendations, stopPolling]);
 
   const handleRefresh = () => {
+    stopPolling();
     setRefreshing(true);
     setMessage(null);
+    setError(null);
 
     apiClient
       .post('/recommendations/refresh/')
-      .then((res) => {
-        setMessage(res.data.message || 'Генерация рекомендаций запущена.');
+      .then(() => {
+        setMessage('Генерация рекомендаций запущена...');
+        pollCountRef.current = 0;
+        pollTimerRef.current = setTimeout(pollForResults, POLL_INTERVAL_MS);
       })
       .catch(() => {
+        setRefreshing(false);
         setError('Не удалось запустить генерацию рекомендаций.');
-      })
-      .finally(() => setRefreshing(false));
+      });
   };
 
   return (
@@ -51,7 +104,7 @@ export const Recommendations = () => {
       <div className="hero bg-gradient-to-r from-blue-400 to-cyan-400 rounded-lg">
         <div className="hero-content text-white text-center">
           <div>
-            <h1 className="text-4xl font-bold mb-4">🤖 AI Рекомендации</h1>
+            <h1 className="text-4xl font-bold mb-4">AI Рекомендации</h1>
             <p className="text-lg">
               Персонализированные возможности с других платформ на основе ваших интересов
             </p>
@@ -68,7 +121,10 @@ export const Recommendations = () => {
       </div>
 
       {message && (
-        <div className="alert alert-success">
+        <div className={`alert ${refreshing ? 'alert-warning' : 'alert-success'}`}>
+          {refreshing && (
+            <span className="loading loading-spinner loading-sm" />
+          )}
           <span>{message}</span>
         </div>
       )}
@@ -83,7 +139,7 @@ export const Recommendations = () => {
       <div className="flex justify-end">
         <button className="btn btn-primary gap-2" onClick={handleRefresh} disabled={refreshing}>
           <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-          {refreshing ? 'Запуск...' : 'Обновить рекомендации'}
+          {refreshing ? 'Генерация...' : 'Обновить рекомендации'}
         </button>
       </div>
 
@@ -105,10 +161,37 @@ export const Recommendations = () => {
             <div className="card-body text-center py-12">
               <Sparkles className="w-16 h-16 mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-semibold mb-2">Рекомендаций пока нет</h3>
-              <p className="text-gray-600">
-                Заполните профиль с вашими интересами и навыками, затем нажмите
-                «Обновить рекомендации» — AI подберёт подходящие возможности.
+              <p className="text-gray-600 mb-4">
+                Чтобы получить персонализированные рекомендации:
               </p>
+              <ol className="text-gray-600 text-left max-w-md mx-auto space-y-2 mb-6">
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-primary">1.</span>
+                  <span>
+                    Перейдите в{' '}
+                    <Link to="/settings" className="link link-primary font-medium">
+                      <UserCog className="w-4 h-4 inline mr-1" />
+                      Настройки профиля
+                    </Link>{' '}
+                    и укажите ваши интересы и навыки
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-primary">2.</span>
+                  <span>
+                    Вернитесь на эту страницу и нажмите{' '}
+                    <strong>«Обновить рекомендации»</strong>
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-primary">3.</span>
+                  <span>AI проанализирует ваш профиль и подберёт подходящие возможности</span>
+                </li>
+              </ol>
+              <Link to="/settings" className="btn btn-outline btn-primary gap-2">
+                <UserCog className="w-4 h-4" />
+                Перейти в настройки
+              </Link>
             </div>
           </div>
         )}

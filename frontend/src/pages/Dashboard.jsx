@@ -29,7 +29,7 @@ export const Dashboard = () => {
       icon: Users,
       title: 'Создать команду',
       description: 'Объедините единомышленников и реализуйте идеи',
-      href: '/teams/create',
+      href: '/teams',
     },
     {
       icon: BookOpen,

@@ -7,3 +7,5 @@ export { default as Settings } from './Settings';
 export { default as Opportunities } from './Opportunities';
 export { default as Portfolio } from './Portfolio';
 export { default as Recommendations } from './Recommendations';
+export { default as Teams } from './Teams';
+export { default as TeamDetail } from './TeamDetail';

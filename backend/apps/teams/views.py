@@ -1,5 +1,5 @@
 from django.utils import timezone
-from rest_framework import permissions, status, viewsets
+from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -23,6 +23,8 @@ class IsTeamLeaderOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
+        if view.action in ('join', 'leave'):
+            return True
         return obj.leader == request.user
 
 
@@ -31,6 +33,8 @@ class TeamViewSet(viewsets.ModelViewSet):
 
     queryset = Team.objects.select_related('leader').prefetch_related('teammember_set__user')
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsTeamLeaderOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'description', 'requirements']
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -47,6 +51,12 @@ class TeamViewSet(viewsets.ModelViewSet):
         if TeamMember.objects.filter(team=team, user=request.user).exists():
             return Response(
                 {'detail': 'Вы уже состоите в этой команде'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if team.max_members and team.members.count() >= team.max_members:
+            return Response(
+                {'detail': 'В команде уже максимальное количество участников'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

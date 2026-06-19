@@ -31,7 +31,14 @@ class Team(models.Model):
     # Основная информация
     name = models.CharField(_('название'), max_length=200)
     description = models.TextField(_('описание'))
-    
+    requirements = models.TextField(_('требования'), blank=True, default='')
+    max_members = models.PositiveIntegerField(
+        _('макс. участников'),
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(2)],
+    )
+
     # Лидер
     leader = models.ForeignKey(
         User,

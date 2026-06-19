@@ -24,6 +24,7 @@ class ListingViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         return (
             Listing.objects.filter(status=ListingStatus.PUBLISHED)
+            .select_related('raw_item__source')
             .prefetch_related('tags')
         )
 

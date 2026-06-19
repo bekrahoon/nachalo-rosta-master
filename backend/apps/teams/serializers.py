@@ -30,18 +30,34 @@ class TeamListSerializer(serializers.ModelSerializer):
 
     leader = UserMinimalSerializer(read_only=True)
     members_count = serializers.SerializerMethodField()
+    is_member = serializers.SerializerMethodField()
+    is_leader = serializers.SerializerMethodField()
     status_display = serializers.CharField(source='get_status_display', read_only=True)
 
     class Meta:
         model = Team
         fields = [
-            'id', 'name', 'description', 'leader', 'status', 'status_display',
-            'avatar', 'total_hours', 'total_volunteers', 'members_count', 'created_at',
+            'id', 'name', 'description', 'requirements', 'max_members',
+            'leader', 'status', 'status_display',
+            'avatar', 'total_hours', 'total_volunteers', 'members_count',
+            'is_member', 'is_leader', 'created_at',
         ]
         read_only_fields = fields
 
     def get_members_count(self, obj):
         return obj.members.count()
+
+    def get_is_member(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.members.filter(id=request.user.id).exists()
+        return False
+
+    def get_is_leader(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.leader_id == request.user.id
+        return False
 
 
 class TeamDetailSerializer(serializers.ModelSerializer):
@@ -54,7 +70,8 @@ class TeamDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         fields = [
-            'id', 'name', 'description', 'leader', 'members', 'status', 'status_display',
+            'id', 'name', 'description', 'requirements', 'max_members',
+            'leader', 'members', 'status', 'status_display',
             'avatar', 'total_hours', 'total_volunteers', 'created_at', 'updated_at',
         ]
         read_only_fields = [
@@ -68,7 +85,7 @@ class TeamCreateUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ['id', 'name', 'description', 'status', 'avatar']
+        fields = ['id', 'name', 'description', 'requirements', 'max_members', 'status', 'avatar']
         read_only_fields = ['id']
 
     def create(self, validated_data):

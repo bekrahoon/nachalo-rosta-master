@@ -11,6 +11,8 @@ import {
   Opportunities,
   Portfolio,
   Recommendations,
+  Teams,
+  TeamDetail,
 } from '../pages';
 
 export const router = createBrowserRouter([
@@ -83,10 +85,23 @@ export const router = createBrowserRouter([
         path: 'teams',
         element: (
           <ProtectedRoute>
-            <div className="text-center py-8">
-              <h2 className="text-2xl font-bold mb-4">👥 Команды</h2>
-              <p className="text-gray-600">Функция в разработке</p>
-            </div>
+            <Teams />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'teams/create',
+        element: (
+          <ProtectedRoute>
+            <Teams />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'teams/:id',
+        element: (
+          <ProtectedRoute>
+            <TeamDetail />
           </ProtectedRoute>
         ),
       },
