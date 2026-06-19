@@ -169,9 +169,9 @@ export const Recommendations = () => {
                   <span className="font-bold text-primary">1.</span>
                   <span>
                     Перейдите в{' '}
-                    <Link to="/settings" className="link link-primary font-medium">
+                    <Link to="/profile" className="link link-primary font-medium">
                       <UserCog className="w-4 h-4 inline mr-1" />
-                      Настройки профиля
+                      Мой профиль
                     </Link>{' '}
                     и укажите ваши интересы и навыки
                   </span>
@@ -188,9 +188,9 @@ export const Recommendations = () => {
                   <span>AI проанализирует ваш профиль и подберёт подходящие возможности</span>
                 </li>
               </ol>
-              <Link to="/settings" className="btn btn-outline btn-primary gap-2">
+              <Link to="/profile" className="btn btn-outline btn-primary gap-2">
                 <UserCog className="w-4 h-4" />
-                Перейти в настройки
+                Перейти в профиль
               </Link>
             </div>
           </div>
