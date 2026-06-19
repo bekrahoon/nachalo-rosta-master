@@ -8,23 +8,23 @@ export const Home = () => {
   const benefits = [
     {
       icon: Sparkles,
-      title: 'Персонализированные возможности',
-      description: 'AI подберёт идеальные проекты по вашим интересам',
+      title: 'AI-подбор возможностей',
+      description: 'Умный алгоритм подберёт стипендии, гранты и стажировки под ваш профиль',
     },
     {
       icon: Users,
-      title: 'Сообщество волонтёров',
-      description: 'Найдите команду, разделяющую ваши ценности',
+      title: 'Совместные заявки',
+      description: 'Найдите напарников для хакатонов, конкурсов и проектов из каталога',
     },
     {
       icon: Target,
-      title: 'Прозрачное влияние',
-      description: 'Видите точное влияние вашей деятельности',
+      title: 'Агрегатор возможностей',
+      description: 'Гранты, стажировки, хакатоны и волонтёрство из 30+ источников в одном месте',
     },
     {
       icon: Zap,
-      title: 'Быстрый старт',
-      description: 'Начните волонтёрить за 5 минут',
+      title: 'Центральная Азия и мир',
+      description: 'Фокус на Кыргызстане, Казахстане, Узбекистане и международных программах',
     },
   ];
 
@@ -108,24 +108,24 @@ export const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div>
                 <h3 className="text-3xl font-bold mb-4">
-                  🤖 AI-Рекомендации
+                  AI-Рекомендации
                 </h3>
                 <p className="text-lg text-gray-700 mb-4">
-                  Наша интеллектуальная система подбирает волонтёрские возможности,
-                  которые идеально соответствуют вашим интересам, навыкам и доступному времени.
+                  Укажите интересы и навыки в профиле — AI подберёт подходящие
+                  гранты, стипендии, хакатоны и стажировки из каталога.
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-center gap-2">
                     <span className="badge badge-primary">✓</span>
-                    Персонализированные рекомендации
+                    Персональный подбор по профилю
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="badge badge-primary">✓</span>
-                    Постоянное улучшение алгоритма
+                    30+ источников из Центральной Азии и мира
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="badge badge-primary">✓</span>
-                    Расширение возможностей
+                    Автоматическое обновление каталога
                   </li>
                 </ul>
               </div>
@@ -141,24 +141,24 @@ export const Home = () => {
               </div>
               <div className="order-1 md:order-2">
                 <h3 className="text-3xl font-bold mb-4">
-                  👥 Поиск команды
+                  Совместные заявки
                 </h3>
                 <p className="text-lg text-gray-700 mb-4">
-                  Найдите единомышленников и создайте команду для реализации
-                  важных социальных проектов и инициатив.
+                  Найдите напарников и соберите команду для участия
+                  в хакатонах, конкурсах и проектах из каталога возможностей.
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-center gap-2">
-                    <span className="badge badge-secondary">✓</span>
-                    Поиск команд по интересам
+                    <span className="badge badge-secondary">+</span>
+                    Привязка к возможностям из каталога
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="badge badge-secondary">✓</span>
-                    Фильтрация по навыкам
+                    <span className="badge badge-secondary">+</span>
+                    Поиск по нужным навыкам
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="badge badge-secondary">✓</span>
-                    Система рейтингов
+                    <span className="badge badge-secondary">+</span>
+                    Быстрое присоединение к команде
                   </li>
                 </ul>
               </div>
@@ -168,24 +168,24 @@ export const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div>
                 <h3 className="text-3xl font-bold mb-4">
-                  🏆 Достижения & Портфолио
+                  Каталог возможностей
                 </h3>
                 <p className="text-lg text-gray-700 mb-4">
-                  Отслеживайте прогресс, получайте награды и создавайте
-                  портфолио волонтёрского опыта для карьерного роста.
+                  Все возможности собраны из реальных источников — Telegram-каналов,
+                  сайтов организаций и RSS-фидов. Каждая ссылка ведёт на оригинал.
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-center gap-2">
                     <span className="badge badge-accent">✓</span>
-                    Система бейджей и наград
+                    Гранты, стипендии, стажировки
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="badge badge-accent">✓</span>
-                    Экспорт в PDF
+                    Хакатоны, конкурсы, форумы
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="badge badge-accent">✓</span>
-                    Интеграция с LinkedIn
+                    Фильтры по типу, региону и тегам
                   </li>
                 </ul>
               </div>
@@ -201,11 +201,11 @@ export const Home = () => {
       <section className="py-20 px-4 bg-gradient-to-r from-primary to-accent text-white">
         <div className="container mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">
-            Готовы изменить мир к лучшему?
+            Готовы начать?
           </h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Присоединитесь к тысячам волонтёров, которые уже вносят
-            положительные изменения в своих сообществах.
+            Зарегистрируйтесь, заполните профиль — и AI подберёт
+            лучшие возможности для вашего роста и развития.
           </p>
           {!isAuthenticated && (
             <Link to="/register" className="btn btn-lg btn-white gap-2">
@@ -220,16 +220,16 @@ export const Home = () => {
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-5xl font-bold text-primary mb-2">5000+</div>
-              <p className="text-xl text-gray-600">Волонтёров</p>
+              <div className="text-5xl font-bold text-primary mb-2">140+</div>
+              <p className="text-xl text-gray-600">Возможностей в каталоге</p>
             </div>
             <div>
-              <div className="text-5xl font-bold text-secondary mb-2">200+</div>
-              <p className="text-xl text-gray-600">Проектов</p>
+              <div className="text-5xl font-bold text-secondary mb-2">30+</div>
+              <p className="text-xl text-gray-600">Источников данных</p>
             </div>
             <div>
-              <div className="text-5xl font-bold text-accent mb-2">50000+</div>
-              <p className="text-xl text-gray-600">Часов волонтёрства</p>
+              <div className="text-5xl font-bold text-accent mb-2">5+</div>
+              <p className="text-xl text-gray-600">Стран Центральной Азии</p>
             </div>
           </div>
         </div>

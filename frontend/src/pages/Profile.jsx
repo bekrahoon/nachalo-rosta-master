@@ -54,9 +54,6 @@ export const Profile = () => {
               <div>
                 <h1 className="text-3xl font-bold">{user?.full_name}</h1>
                 <p className="text-gray-600">{user?.email}</p>
-                <div className="badge badge-primary mt-2">
-                  {user?.status_label || 'Гость'}
-                </div>
               </div>
             </div>
             <button
@@ -113,27 +110,6 @@ export const Profile = () => {
                   className="input input-bordered"
                   {...register('middle_name')}
                 />
-              </div>
-
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Статус-бейдж</span>
-                </label>
-                <input
-                  type="text"
-                  className="input input-bordered"
-                  list="status-label-options"
-                  placeholder="Гость"
-                  maxLength={50}
-                  {...register('status_label')}
-                />
-                <datalist id="status-label-options">
-                  <option value="Гость" />
-                  <option value="Волонтёр" />
-                  <option value="Стажёр" />
-                  <option value="Студент" />
-                  <option value="Организатор" />
-                </datalist>
               </div>
 
               <div className="form-control">
@@ -305,8 +281,8 @@ export const Profile = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <a href="/portfolio" className="card bg-base-100 shadow hover:shadow-lg transition cursor-pointer">
           <div className="card-body">
-            <h3 className="card-title">📄 Портфолио</h3>
-            <p>Управляйте профилем и сохранёнными возможностями</p>
+            <h3 className="card-title">Избранное</h3>
+            <p>Сохранённые возможности</p>
           </div>
         </a>
         <a href="/settings" className="card bg-base-100 shadow hover:shadow-lg transition cursor-pointer">

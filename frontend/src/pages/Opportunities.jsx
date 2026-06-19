@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Search, Filter, ChevronDown } from 'lucide-react';
 import apiClient from '../api/client';
 import ListingCard from '../components/ListingCard';
 import useSavedListings from '../hooks/useSavedListings';
@@ -8,52 +8,88 @@ export const Opportunities = () => {
   const { savedIds, toggleSave } = useSavedListings();
   const [listings, setListings] = useState([]);
   const [count, setCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
   const [facets, setFacets] = useState({ listing_types: [], regions: [], tags: [] });
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedType, setSelectedType] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
+  const debounceTimer = useRef(null);
 
   useEffect(() => {
     apiClient
       .get('/aggregator/listings/facets/')
       .then((res) => setFacets(res.data))
-      .catch(() => {
-        // Фильтры не критичны — список объявлений работает и без них
-      });
+      .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    debounceTimer.current = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 400);
+    return () => clearTimeout(debounceTimer.current);
+  }, [searchQuery]);
 
   const loadListings = useCallback(() => {
     setLoading(true);
     setError(null);
+    setPage(1);
 
     const params = {};
-    if (searchQuery) params.search = searchQuery;
+    if (debouncedQuery) params.search = debouncedQuery;
     if (selectedType) params.listing_type = selectedType;
     if (selectedRegion) params.region = selectedRegion;
 
     apiClient
       .get('/aggregator/listings/', { params })
       .then((res) => {
-        setListings(res.data.results || []);
+        const results = res.data.results || [];
+        setListings(results);
         setCount(res.data.count ?? 0);
+        setHasMore(!!res.data.next);
       })
       .catch(() => {
         setError('Не удалось загрузить объявления. Попробуйте позже.');
         setListings([]);
         setCount(0);
+        setHasMore(false);
       })
       .finally(() => setLoading(false));
-  }, [searchQuery, selectedType, selectedRegion]);
+  }, [debouncedQuery, selectedType, selectedRegion]);
 
   useEffect(() => {
     loadListings();
   }, [loadListings]);
 
+  const loadMore = () => {
+    if (!hasMore || loadingMore) return;
+    setLoadingMore(true);
+    const nextPageNum = page + 1;
+
+    const params = { page: nextPageNum };
+    if (debouncedQuery) params.search = debouncedQuery;
+    if (selectedType) params.listing_type = selectedType;
+    if (selectedRegion) params.region = selectedRegion;
+
+    apiClient
+      .get('/aggregator/listings/', { params })
+      .then((res) => {
+        setListings((prev) => [...prev, ...(res.data.results || [])]);
+        setPage(nextPageNum);
+        setHasMore(!!res.data.next);
+      })
+      .catch(() => {})
+      .finally(() => setLoadingMore(false));
+  };
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    loadListings();
+    clearTimeout(debounceTimer.current);
+    setDebouncedQuery(searchQuery);
   };
 
   return (
@@ -62,7 +98,7 @@ export const Opportunities = () => {
       <div className="hero bg-gradient-to-r from-primary to-accent rounded-lg">
         <div className="hero-content text-white text-center">
           <div>
-            <h1 className="text-4xl font-bold mb-4">🌍 Возможности</h1>
+            <h1 className="text-4xl font-bold mb-4">Возможности</h1>
             <p className="text-lg">
               Волонтёрство, хакатоны, олимпиады, гранты и форумы — собрано из реальных источников
             </p>
@@ -98,7 +134,7 @@ export const Opportunities = () => {
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
               >
-                <option value="">📋 Все типы</option>
+                <option value="">Все типы</option>
                 {facets.listing_types.map((type) => (
                   <option key={type.value} value={type.value}>
                     {type.label}
@@ -130,7 +166,7 @@ export const Opportunities = () => {
 
       {/* Results Count */}
       <div className="text-sm text-gray-600">
-        Найдено объявлений: <span className="font-bold">{count}</span>
+        Найдено: <span className="font-bold">{count}</span> | Показано: <span className="font-bold">{listings.length}</span>
       </div>
 
       {/* Error */}
@@ -161,15 +197,32 @@ export const Opportunities = () => {
         </div>
       )}
 
+      {/* Load More */}
+      {!loading && hasMore && (
+        <div className="flex justify-center pt-4">
+          <button
+            className="btn btn-outline btn-primary gap-2"
+            onClick={loadMore}
+            disabled={loadingMore}
+          >
+            {loadingMore ? (
+              <span className="loading loading-spinner loading-sm" />
+            ) : (
+              <ChevronDown className="w-5 h-5" />
+            )}
+            Загрузить ещё
+          </button>
+        </div>
+      )}
+
       {/* Empty State */}
       {!loading && !error && listings.length === 0 && (
         <div className="card bg-base-100 shadow-lg">
           <div className="card-body text-center py-12">
             <Filter className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Объявлений пока нет</h3>
+            <h3 className="text-lg font-semibold mb-2">Объявлений не найдено</h3>
             <p className="text-gray-600">
-              Мы постоянно собираем новые волонтёрские и образовательные возможности.
-              Загляните позже или измените фильтры.
+              Попробуйте изменить фильтры или поисковый запрос.
             </p>
           </div>
         </div>

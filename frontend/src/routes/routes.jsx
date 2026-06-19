@@ -14,6 +14,7 @@ import {
   Teams,
   TeamDetail,
 } from '../pages';
+import StaticPage from '../pages/StaticPage';
 
 export const router = createBrowserRouter([
   {
@@ -104,6 +105,26 @@ export const router = createBrowserRouter([
             <TeamDetail />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: 'about',
+        element: <StaticPage type="about" />,
+      },
+      {
+        path: 'contacts',
+        element: <StaticPage type="contacts" />,
+      },
+      {
+        path: 'help',
+        element: <StaticPage type="help" />,
+      },
+      {
+        path: 'privacy',
+        element: <StaticPage type="privacy" />,
+      },
+      {
+        path: 'terms',
+        element: <StaticPage type="terms" />,
       },
       {
         path: 'forgot-password',

@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
-  Users, Crown, Clock, ArrowLeft, UserPlus, LogOut,
-  Shield, Trash2, Edit3, Check, X,
+  Users, Crown, ArrowLeft, UserPlus, LogOut,
+  Shield, Trash2, Edit3, Check, X, ExternalLink, HeartHandshake,
 } from 'lucide-react';
 import apiClient from '../api/client';
 import { useAuth } from '../hooks/useAuth';
@@ -16,8 +16,10 @@ export const TeamDetail = () => {
   const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [editData, setEditData] = useState({ name: '', description: '', requirements: '', max_members: '' });
+  const [editData, setEditData] = useState({ name: '', description: '', requirements: '', max_members: '', listing: '' });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [listings, setListings] = useState([]);
+  const [listingsLoading, setListingsLoading] = useState(false);
 
   const fetchTeam = useCallback(() => {
     return apiClient.get(`/teams/${id}/`).then((res) => {
@@ -27,6 +29,7 @@ export const TeamDetail = () => {
         description: res.data.description,
         requirements: res.data.requirements || '',
         max_members: res.data.max_members ?? '',
+        listing: res.data.listing?.id || '',
       });
       return res.data;
     });
@@ -35,7 +38,7 @@ export const TeamDetail = () => {
   useEffect(() => {
     setLoading(true);
     fetchTeam()
-      .catch(() => setError('Команда не найдена'))
+      .catch(() => setError('Заявка не найдена'))
       .finally(() => setLoading(false));
   }, [fetchTeam]);
 
@@ -66,6 +69,16 @@ export const TeamDetail = () => {
     }
   };
 
+  const loadListings = () => {
+    if (listings.length > 0) return;
+    setListingsLoading(true);
+    apiClient
+      .get('/aggregator/listings/', { params: { page_size: 100 } })
+      .then((res) => setListings(res.data.results || []))
+      .catch(() => {})
+      .finally(() => setListingsLoading(false));
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     setActionLoading(true);
@@ -74,6 +87,7 @@ export const TeamDetail = () => {
       description: editData.description,
       requirements: editData.requirements,
       max_members: editData.max_members ? parseInt(editData.max_members, 10) : null,
+      listing: editData.listing || null,
     };
     try {
       await apiClient.patch(`/teams/${id}/`, payload);
@@ -92,7 +106,7 @@ export const TeamDetail = () => {
       await apiClient.delete(`/teams/${id}/`);
       navigate('/teams');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Не удалось удалить команду');
+      setError(err.response?.data?.detail || 'Не удалось удалить заявку');
       setActionLoading(false);
     }
   };
@@ -126,7 +140,7 @@ export const TeamDetail = () => {
       <div className="text-center py-20">
         <h2 className="text-2xl font-bold mb-4">{error}</h2>
         <Link to="/teams" className="btn btn-primary">
-          Вернуться к командам
+          Вернуться к заявкам
         </Link>
       </div>
     );
@@ -136,7 +150,7 @@ export const TeamDetail = () => {
     <div className="space-y-6">
       <Link to="/teams" className="btn btn-ghost btn-sm gap-2">
         <ArrowLeft className="w-4 h-4" />
-        Все команды
+        Все заявки
       </Link>
 
       {error && (
@@ -145,6 +159,38 @@ export const TeamDetail = () => {
           <button className="btn btn-sm btn-ghost" onClick={() => setError(null)}>
             x
           </button>
+        </div>
+      )}
+
+      {/* Linked Opportunity Card */}
+      {team.listing && (
+        <div className="card bg-base-100 shadow-lg border-l-4 border-secondary">
+          <div className="card-body py-4">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex items-center gap-3">
+                <div className="bg-secondary/20 p-2 rounded-lg">
+                  <ExternalLink className="w-5 h-5 text-secondary" />
+                </div>
+                <div>
+                  <div className="font-semibold">{team.listing.title}</div>
+                  {team.listing.listing_type_display && (
+                    <span className="badge badge-secondary badge-sm mt-1">{team.listing.listing_type_display}</span>
+                  )}
+                </div>
+              </div>
+              {team.listing.source_url && (
+                <a
+                  href={team.listing.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-sm btn-secondary gap-1"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Перейти к возможности
+                </a>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
@@ -178,11 +224,31 @@ export const TeamDetail = () => {
               </div>
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Требования к участникам</span>
+                  <span className="label-text">Привязка к возможности</span>
+                  <span className="label-text-alt text-gray-400">необязательно</span>
+                </label>
+                <select
+                  className="select select-bordered"
+                  value={editData.listing}
+                  onChange={(e) => setEditData({ ...editData, listing: e.target.value })}
+                  onFocus={loadListings}
+                >
+                  <option value="">Без привязки</option>
+                  {listingsLoading && <option disabled>Загрузка...</option>}
+                  {listings.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      [{l.listing_type_display}] {l.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Нужные навыки</span>
                 </label>
                 <textarea
                   className="textarea textarea-bordered h-20"
-                  placeholder="Например: знание английского, опыт в дизайне..."
+                  placeholder="Например: Python, дизайн, управление проектами..."
                   value={editData.requirements}
                   onChange={(e) => setEditData({ ...editData, requirements: e.target.value })}
                 />
@@ -215,6 +281,7 @@ export const TeamDetail = () => {
                       description: team.description,
                       requirements: team.requirements || '',
                       max_members: team.max_members ?? '',
+                      listing: team.listing?.id || '',
                     });
                   }}
                 >
@@ -226,13 +293,9 @@ export const TeamDetail = () => {
             <>
               <div className="flex items-start justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4">
-                  {team.avatar ? (
-                    <img src={team.avatar} alt={team.name} className="w-16 h-16 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
-                      <Users className="w-8 h-8 text-primary" />
-                    </div>
-                  )}
+                  <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
+                    <HeartHandshake className="w-8 h-8 text-primary" />
+                  </div>
                   <div>
                     <h1 className="text-3xl font-bold">{team.name}</h1>
                     <div className="flex items-center gap-2 mt-1 text-gray-500">
@@ -261,7 +324,7 @@ export const TeamDetail = () => {
                     return (
                       <button className="btn btn-sm btn-primary gap-1" onClick={handleJoin} disabled={actionLoading || isFull}>
                         {actionLoading ? <span className="loading loading-spinner loading-xs" /> : <UserPlus className="w-4 h-4" />}
-                        {isFull ? 'Мест нет' : 'Вступить в команду'}
+                        {isFull ? 'Мест нет' : 'Присоединиться'}
                       </button>
                     );
                   })()}
@@ -278,7 +341,7 @@ export const TeamDetail = () => {
 
               {team.requirements && (
                 <div className="mt-4 bg-base-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-sm mb-1">Требования к участникам</h3>
+                  <h3 className="font-semibold text-sm mb-1">Нужные навыки</h3>
                   <p className="text-gray-600 text-sm whitespace-pre-line">{team.requirements}</p>
                 </div>
               )}
@@ -293,10 +356,6 @@ export const TeamDetail = () => {
                 {team.max_members && (team.members?.length || 0) >= team.max_members && (
                   <span className="badge badge-error badge-sm">Набор закрыт</span>
                 )}
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  <span>{Math.round(team.total_hours || 0)} часов волонтёрства</span>
-                </div>
                 <div className="text-xs">
                   Создана: {new Date(team.created_at).toLocaleDateString('ru-RU')}
                 </div>
@@ -349,9 +408,9 @@ export const TeamDetail = () => {
       {showDeleteConfirm && (
         <dialog className="modal modal-open">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">Удалить команду?</h3>
+            <h3 className="font-bold text-lg">Удалить заявку?</h3>
             <p className="py-4">
-              Вы уверены, что хотите удалить команду &laquo;{team.name}&raquo;? Это действие нельзя отменить.
+              Вы уверены, что хотите удалить заявку &laquo;{team.name}&raquo;? Это действие нельзя отменить.
             </p>
             <div className="modal-action">
               <button className="btn btn-ghost" onClick={() => setShowDeleteConfirm(false)}>Отмена</button>

@@ -13,9 +13,16 @@ from .models import (
 User = get_user_model()
 
 
-class TeamMemberSerializer(serializers.ModelSerializer):
-    """Сериализатор члена команды"""
+class TeamListingSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    title = serializers.CharField()
+    listing_type = serializers.CharField()
+    listing_type_display = serializers.CharField(source='get_listing_type_display')
+    source_url = serializers.URLField()
+    region = serializers.CharField()
 
+
+class TeamMemberSerializer(serializers.ModelSerializer):
     user = UserMinimalSerializer(read_only=True)
     role_display = serializers.CharField(source='get_role_display', read_only=True)
 
@@ -26,9 +33,8 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 
 
 class TeamListSerializer(serializers.ModelSerializer):
-    """Сериализатор списка команд (короткая версия)"""
-
     leader = UserMinimalSerializer(read_only=True)
+    listing = TeamListingSerializer(read_only=True)
     members_count = serializers.SerializerMethodField()
     is_member = serializers.SerializerMethodField()
     is_leader = serializers.SerializerMethodField()
@@ -38,7 +44,7 @@ class TeamListSerializer(serializers.ModelSerializer):
         model = Team
         fields = [
             'id', 'name', 'description', 'requirements', 'max_members',
-            'leader', 'status', 'status_display',
+            'leader', 'listing', 'status', 'status_display',
             'avatar', 'total_hours', 'total_volunteers', 'members_count',
             'is_member', 'is_leader', 'created_at',
         ]
@@ -61,9 +67,8 @@ class TeamListSerializer(serializers.ModelSerializer):
 
 
 class TeamDetailSerializer(serializers.ModelSerializer):
-    """Сериализатор полной информации о команде"""
-
     leader = UserMinimalSerializer(read_only=True)
+    listing = TeamListingSerializer(read_only=True)
     members = TeamMemberSerializer(source='teammember_set', many=True, read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
 
@@ -71,21 +76,19 @@ class TeamDetailSerializer(serializers.ModelSerializer):
         model = Team
         fields = [
             'id', 'name', 'description', 'requirements', 'max_members',
-            'leader', 'members', 'status', 'status_display',
+            'leader', 'listing', 'members', 'status', 'status_display',
             'avatar', 'total_hours', 'total_volunteers', 'created_at', 'updated_at',
         ]
         read_only_fields = [
-            'id', 'leader', 'members', 'total_hours', 'total_volunteers',
+            'id', 'leader', 'listing', 'members', 'total_hours', 'total_volunteers',
             'created_at', 'updated_at',
         ]
 
 
 class TeamCreateUpdateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания и обновления команды"""
-
     class Meta:
         model = Team
-        fields = ['id', 'name', 'description', 'requirements', 'max_members', 'status', 'avatar']
+        fields = ['id', 'name', 'description', 'requirements', 'max_members', 'listing', 'status', 'avatar']
         read_only_fields = ['id']
 
     def create(self, validated_data):

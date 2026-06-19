@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator
 import uuid
 
+from apps.aggregator.models import Listing
 from apps.events.models import Event
 
 User = get_user_model()
@@ -37,6 +38,15 @@ class Team(models.Model):
         null=True,
         blank=True,
         validators=[MinValueValidator(2)],
+    )
+
+    listing = models.ForeignKey(
+        Listing,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='teamups',
+        verbose_name=_('возможность'),
     )
 
     # Лидер

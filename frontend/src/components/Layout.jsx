@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import Navbar from './Navbar';
 
 export const Layout = () => {
@@ -16,27 +16,27 @@ export const Layout = () => {
             <div>
               <h3 className="font-bold text-lg mb-2">Начало Роста: Влияние</h3>
               <p className="text-sm text-gray-600">
-                Платформа для молодёжного волонтёрства и развития
+                Агрегатор возможностей для молодёжи Центральной Азии
               </p>
             </div>
             <div>
               <h4 className="font-bold mb-2">Ссылки</h4>
               <ul className="text-sm space-y-1">
-                <li><a href="#" className="link link-hover">О проекте</a></li>
-                <li><a href="#" className="link link-hover">Контакты</a></li>
-                <li><a href="#" className="link link-hover">Помощь</a></li>
+                <li><Link to="/about" className="link link-hover">О проекте</Link></li>
+                <li><Link to="/contacts" className="link link-hover">Контакты</Link></li>
+                <li><Link to="/help" className="link link-hover">Помощь</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold mb-2">Политика</h4>
               <ul className="text-sm space-y-1">
-                <li><a href="#" className="link link-hover">Приватность</a></li>
-                <li><a href="#" className="link link-hover">Условия использования</a></li>
+                <li><Link to="/privacy" className="link link-hover">Приватность</Link></li>
+                <li><Link to="/terms" className="link link-hover">Условия использования</Link></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-base-300 mt-8 pt-8 text-center text-sm text-gray-600">
-            <p>&copy; 2024 Начало Роста. Все права защищены.</p>
+            <p>&copy; {new Date().getFullYear()} Начало Роста. Все права защищены.</p>
           </div>
         </div>
       </footer>

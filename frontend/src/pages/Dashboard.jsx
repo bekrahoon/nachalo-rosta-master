@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
-import { TrendingUp, Users, BookOpen, Globe } from 'lucide-react';
+import { TrendingUp, Users, Bookmark, Globe } from 'lucide-react';
 
 export const Dashboard = () => {
   const { user, getProfile } = useAuth();
@@ -27,14 +27,14 @@ export const Dashboard = () => {
     },
     {
       icon: Users,
-      title: 'Создать команду',
-      description: 'Объедините единомышленников и реализуйте идеи',
+      title: 'Найти команду',
+      description: 'Найдите напарников для хакатонов, конкурсов и проектов',
       href: '/teams',
     },
     {
-      icon: BookOpen,
-      title: 'Портфолио',
-      description: 'Создайте впечатляющее портфолио волонтёрского опыта',
+      icon: Bookmark,
+      title: 'Избранное',
+      description: 'Сохранённые возможности в одном месте',
       href: '/portfolio',
     },
   ];
