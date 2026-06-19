@@ -1,2 +1,13 @@
 .env
-backend/logs
+__pycache__/
+*.pyc
+*.pyo
+node_modules/
+backend/logs/
+*.log
+*.sqlite3
+.DS_Store
+nginx/ssl/
+*.swp
+*.swo
+*~

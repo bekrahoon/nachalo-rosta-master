@@ -1,16 +1,20 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from apps.events.serializers import UserMinimalSerializer, EventListSerializer
 from .models import (
-    RecruitmentSlot,
     Team,
-    TeamApplication,
-    TeamApplicationStatus,
     TeamMember,
 )
 
 User = get_user_model()
+
+
+class UserMinimalSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(source='get_full_name', read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'full_name', 'avatar']
 
 
 class TeamListingSerializer(serializers.Serializer):
