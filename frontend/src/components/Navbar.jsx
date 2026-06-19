@@ -53,10 +53,14 @@ export const Navbar = () => {
         <div className="flex-none">
           {isAuthenticated ? (
             <div className="dropdown dropdown-end">
-              <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-                <div className="w-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">
-                  {user?.first_name?.charAt(0) || 'U'}
-                </div>
+              <label tabIndex={0} className="btn btn-ghost btn-circle avatar" onClick={() => setMobileOpen(false)}>
+                {user?.avatar ? (
+                  <img src={user.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-primary text-white grid place-items-center font-bold text-lg">
+                    {user?.first_name?.charAt(0) || 'U'}
+                  </div>
+                )}
               </label>
               <ul
                 tabIndex={0}

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
 import { Alert } from '../components';
 import { User, Mail, Phone, MapPin, Calendar, Edit2, X } from 'lucide-react';
+import apiClient from '../api/client';
 
 const formatDate = (value) => {
   if (!value) return null;
@@ -44,17 +45,36 @@ export const Profile = () => {
       {/* Header */}
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="avatar placeholder">
-                <div className="bg-primary text-white w-20 rounded-full flex items-center justify-center text-2xl font-bold">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+            <div className="relative group">
+              {user?.avatar ? (
+                <img src={user.avatar} alt="" className="w-20 h-20 rounded-full object-cover" />
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-primary text-white grid place-items-center text-3xl font-bold">
                   {user?.first_name?.charAt(0) || 'U'}
                 </div>
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold">{user?.full_name}</h1>
-                <p className="text-gray-600">{user?.email}</p>
-              </div>
+              )}
+              <label className="absolute inset-0 rounded-full bg-black/40 text-white grid place-items-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
+                <Edit2 className="w-5 h-5" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const formData = new FormData();
+                    formData.append('avatar', file);
+                    apiClient.patch('/auth/profile/', formData, {
+                      headers: { 'Content-Type': 'multipart/form-data' },
+                    }).then(() => getProfile());
+                  }}
+                />
+              </label>
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <h1 className="text-2xl sm:text-3xl font-bold">{user?.full_name}</h1>
+              <p className="text-gray-600 text-sm">{user?.email}</p>
             </div>
             <button
               onClick={() => setIsEditing(!isEditing)}
