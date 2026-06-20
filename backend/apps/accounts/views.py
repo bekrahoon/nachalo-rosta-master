@@ -2,7 +2,7 @@
 Views for user authentication and account management.
 """
 
-from rest_framework import viewsets, status, views, permissions
+from rest_framework import viewsets, status, views, permissions, parsers
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
@@ -183,15 +183,16 @@ class UserProfileView(views.APIView):
     """
     User profile endpoint.
     GET: Get current user profile
-    PUT: Update current user profile
+    PUT/PATCH: Update current user profile
     """
     permission_classes = [permissions.IsAuthenticated]
-    
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
+
     def get(self, request):
         """Get current user profile"""
         serializer = UserSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def put(self, request):
         """Update current user profile"""
         serializer = UserUpdateSerializer(
@@ -211,6 +212,9 @@ class UserProfileView(views.APIView):
             )
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request):
+        return self.put(request)
 
 
 class ChangePasswordView(views.APIView):

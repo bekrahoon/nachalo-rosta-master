@@ -15,8 +15,9 @@ const formatDate = (value) => {
 };
 
 export const Profile = () => {
-  const { user, updateProfile, loading, error, message, clearError, clearMessage } = useAuth();
+  const { user, updateProfile, getProfile, loading, error, message, clearError, clearMessage } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     defaultValues: user || {},
@@ -46,7 +47,7 @@ export const Profile = () => {
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-            <div className="relative group">
+            <div className="relative">
               {user?.avatar ? (
                 <img src={user.avatar} alt="" className="w-20 h-20 rounded-full object-cover" />
               ) : (
@@ -54,20 +55,29 @@ export const Profile = () => {
                   {user?.first_name?.charAt(0) || 'U'}
                 </div>
               )}
-              <label className="absolute inset-0 rounded-full bg-black/40 text-white grid place-items-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
-                <Edit2 className="w-5 h-5" />
+              <label className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-base-100 shadow border border-base-300 grid place-items-center cursor-pointer hover:bg-base-200 transition">
+                {avatarUploading ? (
+                  <span className="loading loading-spinner loading-xs" />
+                ) : (
+                  <Edit2 className="w-4 h-4" />
+                )}
                 <input
                   type="file"
                   accept="image/*"
                   className="hidden"
+                  disabled={avatarUploading}
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
+                    setAvatarUploading(true);
                     const formData = new FormData();
                     formData.append('avatar', file);
                     apiClient.patch('/auth/profile/', formData, {
                       headers: { 'Content-Type': 'multipart/form-data' },
-                    }).then(() => getProfile());
+                    })
+                      .then(() => getProfile())
+                      .catch(() => alert('Не удалось загрузить фото'))
+                      .finally(() => setAvatarUploading(false));
                   }}
                 />
               </label>
