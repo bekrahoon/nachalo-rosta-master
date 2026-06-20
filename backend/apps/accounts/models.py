@@ -54,7 +54,7 @@ class CustomUser(AbstractUser):
         validators=[
             RegexValidator(
                 regex=r'^\+?1?\d{9,15}$',
-                message=_('Phone number must be entered in the format: +999999999. Up to 15 digits allowed.')
+                message=_('Номер телефона должен быть в формате: +996700123456. До 15 цифр.')
             )
         ]
     )

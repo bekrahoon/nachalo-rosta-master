@@ -167,7 +167,7 @@ export const Register = () => {
               </label>
               <input
                 type="tel"
-                placeholder="+996 700 123 456"
+                placeholder="+996700123456"
                 className="input input-bordered w-full input-sm"
                 {...registerField('phone')}
               />
