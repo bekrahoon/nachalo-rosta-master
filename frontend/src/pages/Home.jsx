@@ -49,7 +49,7 @@ export const Home = () => {
               ) : (
                 <>
                   <Link to="/register" className="btn btn-lg btn-white gap-2">
-                    Начать волонтёрить
+                    Присоединиться
                   </Link>
                   <Link to="/login" className="btn btn-lg btn-outline btn-white">
                     Вход
