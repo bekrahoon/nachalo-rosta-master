@@ -234,3 +234,20 @@ def classify_pending_items() -> str:
         classify_raw_item.delay(str(raw_item_id))
 
     return f'queued {len(raw_item_ids)} item(s) for classification'
+
+
+@shared_task
+def auto_publish_and_cleanup() -> str:
+    """Авто-публикация pending и удаление старых объявлений (90+ дней)."""
+    from datetime import timedelta
+
+    published = Listing.objects.filter(status=ListingStatus.PENDING).update(
+        status=ListingStatus.PUBLISHED
+    )
+
+    cutoff = timezone.now() - timedelta(days=90)
+    expired = Listing.objects.filter(created_at__lt=cutoff).update(
+        status=ListingStatus.EXPIRED
+    )
+
+    return f'published {published}, expired {expired}'

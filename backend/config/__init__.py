@@ -25,4 +25,8 @@ app.conf.beat_schedule = {
         'task': 'apps.aggregator.tasks.classify_pending_items',
         'schedule': crontab(minute='*/10'),
     },
+    'aggregator-publish-cleanup': {
+        'task': 'apps.aggregator.tasks.auto_publish_and_cleanup',
+        'schedule': crontab(hour='*/6'),
+    },
 }
