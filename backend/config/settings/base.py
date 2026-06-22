@@ -450,3 +450,8 @@ DISCORD_CLIENT_SECRET = config('DISCORD_CLIENT_SECRET', default='')
 # ============================================================================
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+
+# Web Push VAPID
+VAPID_PUBLIC_KEY = config('VAPID_PUBLIC_KEY', default='')
+VAPID_PRIVATE_KEY = config('VAPID_PRIVATE_KEY', default='')
+VAPID_ADMIN_EMAIL = config('VAPID_ADMIN_EMAIL', default='mailto:info@nachalo.live')

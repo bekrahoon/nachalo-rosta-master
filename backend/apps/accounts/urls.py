@@ -17,6 +17,7 @@ from .views import (
     UserCheckEmailView,
 )
 from .social_auth import SocialAuthView, SocialAuthConfigView
+from .push import PushSubscribeView, VapidPublicKeyView
 
 app_name = 'accounts'
 
@@ -45,4 +46,8 @@ urlpatterns = [
 
     # User Details
     path('user/<uuid:user_id>/', UserDetailView.as_view(), name='user_detail'),
+
+    # Push Notifications
+    path('push/subscribe/', PushSubscribeView.as_view(), name='push_subscribe'),
+    path('push/vapid-key/', VapidPublicKeyView.as_view(), name='vapid_key'),
 ]

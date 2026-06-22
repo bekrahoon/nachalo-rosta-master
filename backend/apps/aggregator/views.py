@@ -1,3 +1,6 @@
+from datetime import timedelta
+
+from django.utils import timezone
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -27,6 +30,19 @@ class ListingViewSet(viewsets.ReadOnlyModelViewSet):
             .select_related('raw_item__source')
             .prefetch_related('tags')
         )
+
+    @action(detail=False, methods=['get'])
+    def new_count(self, request):
+        since = request.query_params.get('since')
+        if since:
+            try:
+                cutoff = timezone.datetime.fromisoformat(since)
+            except ValueError:
+                cutoff = timezone.now() - timedelta(days=1)
+        else:
+            cutoff = timezone.now() - timedelta(days=1)
+        count = self.get_queryset().filter(created_at__gt=cutoff).count()
+        return Response({'count': count, 'since': cutoff.isoformat()})
 
     @action(detail=False, methods=['get'])
     def facets(self, request):

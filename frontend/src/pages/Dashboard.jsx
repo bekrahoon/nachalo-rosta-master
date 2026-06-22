@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { TrendingUp, Bookmark, Globe } from 'lucide-react';
+import { subscribeToPush } from '../utils/pushNotifications';
 
 export const Dashboard = () => {
   const { user, getProfile } = useAuth();
@@ -11,6 +12,10 @@ export const Dashboard = () => {
       getProfile();
     }
   }, [user, getProfile]);
+
+  useEffect(() => {
+    subscribeToPush();
+  }, []);
 
   const features = [
     {

@@ -83,3 +83,4 @@ ipython==8.18.1
 
 # Windows compatibility
 tzdata==2023.4
+pywebpush>=2.3.0

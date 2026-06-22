@@ -250,4 +250,15 @@ def auto_publish_and_cleanup() -> str:
         status=ListingStatus.EXPIRED
     )
 
+    if published > 0:
+        try:
+            from apps.accounts.push import send_push_to_all
+            send_push_to_all(
+                title=f'{published} новых IT-возможностей!',
+                body='Хакатоны, стажировки и гранты — смотрите в каталоге',
+                url='/opportunities',
+            )
+        except Exception:
+            pass
+
     return f'published {published}, expired {expired}'

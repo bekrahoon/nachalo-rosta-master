@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, LogOut, User, Settings, X, Globe, Sparkles, HeartHandshake, Bookmark, LayoutDashboard } from 'lucide-react';
+import { Menu, LogOut, User, Settings, X, Globe, Sparkles, Bookmark, LayoutDashboard, Bell } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import apiClient from '../api/client';
 
 export const Navbar = () => {
   const navigate = useNavigate();
