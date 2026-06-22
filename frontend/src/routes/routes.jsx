@@ -11,8 +11,7 @@ import {
   Opportunities,
   Portfolio,
   Recommendations,
-  Teams,
-  TeamDetail,
+  ListingDetail,
   OAuthCallback,
 } from '../pages';
 import StaticPage from '../pages/StaticPage';
@@ -72,6 +71,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: 'opportunities/:id',
+        element: (
+          <ProtectedRoute>
+            <ListingDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: 'recommendations',
         element: (
           <ProtectedRoute>
@@ -84,30 +91,6 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Portfolio />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'teams',
-        element: (
-          <ProtectedRoute>
-            <Teams />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'teams/create',
-        element: (
-          <ProtectedRoute>
-            <Teams />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'teams/:id',
-        element: (
-          <ProtectedRoute>
-            <TeamDetail />
           </ProtectedRoute>
         ),
       },

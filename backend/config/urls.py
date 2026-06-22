@@ -22,7 +22,6 @@ urlpatterns = [
     path('api/v1/auth/', include('apps.accounts.urls', namespace='accounts')),
     path('api/v1/recommendations/', include('apps.recommendations.urls', namespace='recommendations')),
     path('api/v1/portfolio/', include('apps.portfolio.urls', namespace='portfolio')),
-    path('api/v1/teams/', include('apps.teams.urls', namespace='teams')),
     path('api/v1/aggregator/', include('apps.aggregator.urls', namespace='aggregator')),
     
     # Allauth (для социальной аутентификации и всяческих фич)

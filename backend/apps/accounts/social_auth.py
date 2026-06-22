@@ -45,20 +45,28 @@ def _exchange_code(provider_cfg, code, redirect_uri):
     client_id = getattr(settings, provider_cfg['client_id_setting'], '')
     client_secret = getattr(settings, provider_cfg['client_secret_setting'], '')
 
+    payload = {
+        'code': code,
+        'redirect_uri': redirect_uri,
+        'client_id': client_id,
+        'client_secret': client_secret,
+    }
+    if 'github' not in provider_cfg['token_url']:
+        payload['grant_type'] = 'authorization_code'
+
     resp = http_requests.post(
         provider_cfg['token_url'],
-        data={
-            'grant_type': 'authorization_code',
-            'code': code,
-            'redirect_uri': redirect_uri,
-            'client_id': client_id,
-            'client_secret': client_secret,
-        },
+        data=payload,
         headers={'Accept': 'application/json'},
         timeout=10,
     )
     resp.raise_for_status()
-    return resp.json()['access_token']
+    data = resp.json()
+    token = data.get('access_token')
+    if not token:
+        logger.error('OAuth response missing access_token: %s', data)
+        raise ValueError(f'No access_token in response: {list(data.keys())}')
+    return token
 
 
 def _get_userinfo_google(access_token):

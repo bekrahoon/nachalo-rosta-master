@@ -138,13 +138,11 @@ class RawItem(models.Model):
 
 class ListingType(models.TextChoices):
     """Тип объявления о возможности"""
-    VOLUNTEER = 'volunteer', _('Волонтёрство')
     HACKATHON = 'hackathon', _('Хакатон')
-    OLYMPIAD = 'olympiad', _('Олимпиада')
-    FORUM = 'forum', _('Форум')
-    GRANT = 'grant', _('Грант')
+    GRANT = 'grant', _('Грант / Стипендия')
     INTERNSHIP = 'internship', _('Стажировка')
     CONTEST = 'contest', _('Конкурс')
+    COURSE = 'course', _('Курс / Обучение')
     OTHER = 'other', _('Другое')
 
 

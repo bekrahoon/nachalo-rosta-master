@@ -9,17 +9,17 @@ export const Home = () => {
     {
       icon: Sparkles,
       title: 'AI-подбор возможностей',
-      description: 'Умный алгоритм подберёт стипендии, гранты и стажировки под ваш профиль',
+      description: 'Умный алгоритм подберёт хакатоны, стажировки и IT-гранты под ваш профиль',
     },
     {
       icon: Users,
-      title: 'Совместные заявки',
-      description: 'Найдите напарников для хакатонов, конкурсов и проектов из каталога',
+      title: 'IT-сообщество',
+      description: 'Стажировки в топовых компаниях, хакатоны и конкурсы из Центральной Азии',
     },
     {
       icon: Target,
-      title: 'Агрегатор возможностей',
-      description: 'Гранты, стажировки, хакатоны и волонтёрство из 30+ источников в одном месте',
+      title: 'Агрегатор IT-возможностей',
+      description: 'Хакатоны, стажировки, гранты и конкурсы из 30+ источников в одном месте',
     },
     {
       icon: Zap,
@@ -38,8 +38,8 @@ export const Home = () => {
               Начало Роста: Влияние
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl mb-6 md:mb-8 leading-relaxed">
-              Платформа для молодёжного волонтёрства, социальных инициатив
-              и развития в Центральной Азии
+              Агрегатор IT-возможностей для молодёжи Центральной Азии:
+              хакатоны, стажировки, гранты и конкурсы
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
               {isAuthenticated ? (
@@ -67,7 +67,7 @@ export const Home = () => {
           <div className="text-center mb-8 md:mb-16">
             <h2 className="text-2xl md:text-4xl font-bold mb-4">Почему выбирать нас?</h2>
             <p className="text-base md:text-xl text-gray-600">
-              Всё что нужно для успешного волонтёрства в одной платформе
+              Всё что нужно для карьеры в IT — в одной платформе
             </p>
           </div>
 
@@ -141,24 +141,24 @@ export const Home = () => {
               </div>
               <div className="order-1 md:order-2">
                 <h3 className="text-xl md:text-3xl font-bold mb-4">
-                  Совместные заявки
+                  Источники со всего мира
                 </h3>
                 <p className="text-lg text-gray-700 mb-4">
-                  Найдите напарников и соберите команду для участия
-                  в хакатонах, конкурсах и проектах из каталога возможностей.
+                  Агрегатор собирает IT-возможности из Telegram-каналов,
+                  сайтов и RSS-фидов — всё в одном месте.
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-center gap-2">
                     <span className="badge badge-secondary">+</span>
-                    Привязка к возможностям из каталога
+                    Кыргызстан, Казахстан, Узбекистан
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="badge badge-secondary">+</span>
-                    Поиск по нужным навыкам
+                    Международные IT-программы
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="badge badge-secondary">+</span>
-                    Быстрое присоединение к команде
+                    Автоматическое обновление каждые 15 минут
                   </li>
                 </ul>
               </div>

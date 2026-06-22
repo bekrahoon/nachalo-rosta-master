@@ -18,7 +18,6 @@ export const Navbar = () => {
     { to: '/dashboard', label: 'Главная', icon: LayoutDashboard },
     { to: '/opportunities', label: 'Возможности', icon: Globe },
     { to: '/recommendations', label: 'AI Рекомендации', icon: Sparkles },
-    { to: '/teams', label: 'Найти команду', icon: HeartHandshake },
     { to: '/portfolio', label: 'Избранное', icon: Bookmark },
   ];
 

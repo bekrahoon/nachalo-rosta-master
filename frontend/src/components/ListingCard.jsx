@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { MapPin, Calendar, ExternalLink, Globe, Building2, Sparkles, Bookmark } from 'lucide-react';
 
 const formatDate = (value) => {
@@ -43,15 +44,15 @@ export const ListingCard = ({ listing, matchScore, reason, isSaved, onToggleSave
         </figure>
       ) : (
         <div className="bg-gradient-to-r from-primary/20 to-accent/20 h-32 flex items-center justify-center text-5xl">
-          🌍
+          &lt;/&gt;
         </div>
       )}
 
       <div className="card-body">
         <div className="badge badge-secondary badge-outline">{listing.listing_type_display}</div>
-        <h2 className="card-title text-lg">{listing.title}</h2>
+        <h2 className="card-title text-lg line-clamp-2">{listing.title}</h2>
         {listing.description && (
-          <p className="text-gray-600 text-sm line-clamp-3">{listing.description}</p>
+          <p className="text-gray-600 text-sm line-clamp-2">{listing.description}</p>
         )}
 
         {reason && (
@@ -61,11 +62,11 @@ export const ListingCard = ({ listing, matchScore, reason, isSaved, onToggleSave
           </p>
         )}
 
-        <div className="space-y-2 my-4 text-sm">
+        <div className="space-y-1 my-3 text-sm">
           {listing.organization_name && (
             <div className="flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-primary" />
-              <span>{listing.organization_name}</span>
+              <Building2 className="w-4 h-4 text-primary flex-shrink-0" />
+              <span className="truncate">{listing.organization_name}</span>
             </div>
           )}
           {listing.is_online ? (
@@ -79,12 +80,6 @@ export const ListingCard = ({ listing, matchScore, reason, isSaved, onToggleSave
               <span>{listing.region}</span>
             </div>
           ) : null}
-          {startDate && (
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-primary" />
-              <span>{startDate}</span>
-            </div>
-          )}
           {deadline && (
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-error" />
@@ -93,28 +88,21 @@ export const ListingCard = ({ listing, matchScore, reason, isSaved, onToggleSave
           )}
         </div>
 
-        {listing.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-2">
-            {listing.tags.map((tag) => (
-              <span key={tag.id} className="badge badge-ghost badge-sm">
-                {tag.name}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="card-actions justify-between items-center pt-2">
-          {listing.source_name && (
-            <span className="text-xs text-gray-400 truncate max-w-[40%]">{listing.source_name}</span>
-          )}
+        <div className="card-actions justify-end pt-2 gap-2">
+          <Link
+            to={`/opportunities/${listing.id}`}
+            className="btn btn-outline btn-primary btn-sm"
+          >
+            Подробнее
+          </Link>
           {listing.source_url && (
             <a
               href={listing.source_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-secondary btn-sm gap-1 ml-auto"
+              className="btn btn-primary btn-sm gap-1"
             >
-              Перейти к источнику
+              Источник
               <ExternalLink className="w-4 h-4" />
             </a>
           )}

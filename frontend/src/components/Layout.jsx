@@ -16,7 +16,7 @@ export const Layout = () => {
             <div>
               <h3 className="font-bold text-lg mb-2">Начало Роста: Влияние</h3>
               <p className="text-sm text-gray-600">
-                Агрегатор возможностей для молодёжи Центральной Азии
+                Агрегатор IT-возможностей для молодёжи Центральной Азии
               </p>
             </div>
             <div>

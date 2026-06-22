@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
-import { TrendingUp, Users, Bookmark, Globe } from 'lucide-react';
+import { TrendingUp, Bookmark, Globe } from 'lucide-react';
 
 export const Dashboard = () => {
   const { user, getProfile } = useAuth();
@@ -16,20 +16,14 @@ export const Dashboard = () => {
     {
       icon: Globe,
       title: 'Возможности',
-      description: 'Волонтёрство, хакатоны, олимпиады и гранты из реальных источников',
+      description: 'Хакатоны, стажировки, гранты и IT-программы из реальных источников',
       href: '/opportunities',
     },
     {
       icon: TrendingUp,
       title: 'AI Рекомендации',
-      description: 'Персонализированные рекомендации волонтёрских возможностей',
+      description: 'AI подберёт IT-возможности под ваш профиль',
       href: '/recommendations',
-    },
-    {
-      icon: Users,
-      title: 'Найти команду',
-      description: 'Найдите напарников для хакатонов, конкурсов и проектов',
-      href: '/teams',
     },
     {
       icon: Bookmark,
@@ -49,7 +43,7 @@ export const Dashboard = () => {
               Добро пожаловать, {user?.first_name}! 👋
             </h1>
             <p className="text-xl mb-6 max-w-2xl">
-              Начните свой путь в мире волонтёрства и развития. Найдите возможности,
+              Начните свой путь в мире IT. Найдите возможности,
               которые соответствуют вашим интересам и ценностям.
             </p>
             <div className="flex gap-4 justify-center">
@@ -99,7 +93,7 @@ export const Dashboard = () => {
       <section className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg p-8 text-center">
         <h2 className="text-2xl font-bold mb-4">Не знаете с чего начать?</h2>
         <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-          Наши AI-рекомендации помогут вам найти идеальные волонтёрские возможности
+          Наши AI-рекомендации помогут вам найти подходящие IT-возможности
           на основе ваших интересов и навыков.
         </p>
         <Link to="/recommendations" className="btn btn-primary">
