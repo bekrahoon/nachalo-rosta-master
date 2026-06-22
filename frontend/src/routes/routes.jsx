@@ -13,6 +13,7 @@ import {
   Recommendations,
   Teams,
   TeamDetail,
+  OAuthCallback,
 } from '../pages';
 import StaticPage from '../pages/StaticPage';
 
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
       {
         path: 'register',
         element: <Register />,
+      },
+      {
+        path: 'auth/callback',
+        element: <OAuthCallback />,
       },
       {
         path: 'dashboard',

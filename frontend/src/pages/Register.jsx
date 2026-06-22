@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, Lock, User, Phone, CheckCircle } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { Alert } from '../components';
+import SocialLoginButtons from '../components/SocialLoginButtons';
 
 // Валидация формы
 const registerSchema = z.object({
@@ -238,6 +239,12 @@ export const Register = () => {
               {loading ? 'Регистрация...' : 'Зарегистрироваться'}
             </button>
           </form>
+
+          {/* Divider */}
+          <div className="divider my-2 text-xs">или</div>
+
+          {/* Social Login */}
+          <SocialLoginButtons />
 
           {/* Login Link */}
           <p className="text-center text-xs mt-4">

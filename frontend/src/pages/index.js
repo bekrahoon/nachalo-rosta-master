@@ -9,3 +9,4 @@ export { default as Portfolio } from './Portfolio';
 export { default as Recommendations } from './Recommendations';
 export { default as Teams } from './Teams';
 export { default as TeamDetail } from './TeamDetail';
+export { default as OAuthCallback } from './OAuthCallback';

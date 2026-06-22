@@ -123,9 +123,10 @@ class CustomUser(AbstractUser):
         help_text=_('List of skills, e.g. ["first aid", "photography", "teaching"]')
     )
     
-    # OAuth fields (for future social auth)
+    # OAuth fields
     google_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
     github_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
+    discord_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
     
     objects = CustomUserManager()
     

@@ -131,6 +131,26 @@ export const confirmPasswordResetThunk = createAsyncThunk(
   }
 );
 
+export const socialLoginThunk = createAsyncThunk(
+  'auth/socialLogin',
+  async ({ provider, code, redirectUri }, { rejectWithValue }) => {
+    try {
+      const data = await authApi.socialLogin(provider, code, redirectUri);
+      localStorage.setItem('access_token', data.access);
+      localStorage.setItem('refresh_token', data.refresh);
+
+      const profile = await authApi.getProfile();
+      localStorage.setItem('user', JSON.stringify(profile));
+
+      return profile;
+    } catch (error) {
+      return rejectWithValue(
+        formatApiError(error.response?.data, 'Social login failed')
+      );
+    }
+  }
+);
+
 // Initial state
 const initialState = {
   user: JSON.parse(localStorage.getItem('user')) || null,
@@ -287,6 +307,24 @@ const authSlice = createSlice({
       .addCase(confirmPasswordResetThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      });
+
+    // Social Login
+    builder
+      .addCase(socialLoginThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(socialLoginThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.isAuthenticated = true;
+        state.error = null;
+      })
+      .addCase(socialLoginThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.isAuthenticated = false;
       });
   },
 });

@@ -8,6 +8,7 @@ import {
   changePasswordThunk,
   requestPasswordResetThunk,
   confirmPasswordResetThunk,
+  socialLoginThunk,
   clearError,
   clearMessage,
 } from '../store/authSlice';
@@ -50,6 +51,10 @@ export const useAuth = () => {
     return dispatch(confirmPasswordResetThunk(data));
   };
 
+  const socialLogin = async (provider, code, redirectUri) => {
+    return dispatch(socialLoginThunk({ provider, code, redirectUri }));
+  };
+
   const handleClearError = () => {
     dispatch(clearError());
   };
@@ -72,6 +77,7 @@ export const useAuth = () => {
     changePassword,
     requestPasswordReset,
     confirmPasswordReset,
+    socialLogin,
     clearError: handleClearError,
     clearMessage: handleClearMessage,
   };

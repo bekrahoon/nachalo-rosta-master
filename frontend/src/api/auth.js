@@ -75,3 +75,17 @@ export const getUserProfile = async (userId) => {
   const response = await apiClient.get(`/auth/user/${userId}/`);
   return response.data;
 };
+
+// Social OAuth
+export const getSocialAuthConfig = async () => {
+  const response = await apiClient.get('/auth/social-config/');
+  return response.data;
+};
+
+export const socialLogin = async (provider, code, redirectUri) => {
+  const response = await apiClient.post(`/auth/social/${provider}/`, {
+    code,
+    redirect_uri: redirectUri,
+  });
+  return response.data;
+};

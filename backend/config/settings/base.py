@@ -433,6 +433,19 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 # ============================================================================
+# Social OAuth Configuration
+# ============================================================================
+
+GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID', default='')
+GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET', default='')
+
+GITHUB_CLIENT_ID = config('GITHUB_CLIENT_ID', default='')
+GITHUB_CLIENT_SECRET = config('GITHUB_CLIENT_SECRET', default='')
+
+DISCORD_CLIENT_ID = config('DISCORD_CLIENT_ID', default='')
+DISCORD_CLIENT_SECRET = config('DISCORD_CLIENT_SECRET', default='')
+
+# ============================================================================
 # Frontend Configuration
 # ============================================================================
 
