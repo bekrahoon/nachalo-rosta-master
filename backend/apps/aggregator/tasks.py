@@ -198,7 +198,7 @@ def classify_raw_item(self, raw_item_id: str) -> str:
         title=str(result.get('title') or raw_item.raw_text[:300])[:300],
         description=str(result.get('summary', '')),
         listing_type=listing_type,
-        status=ListingStatus.PUBLISHED if auto_publish else ListingStatus.PENDING,
+        status=ListingStatus.PUBLISHED,
         organization_name=str(result.get('organization', ''))[:200],
         region=str(result.get('region', ''))[:100],
         is_online=bool(result.get('is_online', False)),
@@ -217,6 +217,16 @@ def classify_raw_item(self, raw_item_id: str) -> str:
     raw_item.status = RawItemStatus.PROCESSED
     raw_item.processed_at = timezone.now()
     raw_item.save(update_fields=['status', 'processed_at'])
+
+    try:
+        from apps.accounts.push import send_push_to_all
+        send_push_to_all(
+            title=listing.title[:60],
+            body=f'{listing.get_listing_type_display()} — {listing.organization_name or "смотрите подробнее"}',
+            url=f'/opportunities/{listing.id}',
+        )
+    except Exception:
+        pass
 
     return f'raw item {raw_item_id}: created listing {listing.id} ({listing.status})'
 
