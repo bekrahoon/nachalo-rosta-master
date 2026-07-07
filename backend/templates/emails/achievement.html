@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .badge { font-size: 48px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Новое достижение разблокировано!</h2>
+        <p>Привет, {{ user.first_name }}!</p>
+        <p class="badge">{{ badge.icon }}</p>
+        <p>Вы получили достижение <strong>{{ badge.name }}</strong></p>
+        <p>{{ badge.description }}</p>
+        <hr>
+        <p><small>{{ site_name }} Team</small></p>
+    </div>
+</body>
+</html>

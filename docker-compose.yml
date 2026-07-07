@@ -1,0 +1,138 @@
+services:
+  # PostgreSQL База данных
+  postgres:
+    image: postgres:16-alpine
+    container_name: nachalo_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-nachalo_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nachalo_secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-nachalo_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nachalo_user} -d ${POSTGRES_DB:-nachalo_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nachalo_network
+
+  # Redis для Celery, caching, token blacklist
+  redis:
+    image: redis:7-alpine
+    container_name: nachalo_redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nachalo_network
+
+  # Django Backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: nachalo_backend
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --timeout 120"
+    networks:
+      - nachalo_network
+
+  # Celery Worker
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: nachalo_celery
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - backend
+      - redis
+      - postgres
+    command: celery -A config worker -l info --concurrency=4
+    networks:
+      - nachalo_network
+
+  # Celery Beat (Scheduler)
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: nachalo_celery_beat
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - backend
+      - redis
+      - postgres
+    command: celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    networks:
+      - nachalo_network
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nachalo_frontend
+    env_file:
+      - .env
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - nachalo_network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: nachalo_nginx
+    ports:
+      - "8080:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - nachalo_network
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+
+networks:
+  nachalo_network:
+    driver: bridge

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Добро пожаловать в {{ site_name }}!</h2>
+        <p>Привет, {{ user.first_name }}!</p>
+        <p>Спасибо за подтверждение вашего email адреса. Ваш аккаунт активирован!</p>
+        <p>Теперь вы можете войти и начать использовать все возможности платформы.</p>
+        <p>Удачи! 🚀</p>
+        <hr>
+        <p><small>{{ site_name }} Team</small></p>
+    </div>
+</body>
+</html>
