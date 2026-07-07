@@ -2,7 +2,7 @@
 
 Платформа для поиска IT-возможностей для молодёжи Центральной Азии. Здесь собраны гранты, стажировки, хакатоны, конкурсы и AI-рекомендации на основе профиля пользователя.
 
-**Демо:** http://nachalo.live
+Онлайн-демо сейчас недоступно: проект рассчитан на локальный запуск через Docker Compose.
 
 ## Скриншоты
 
@@ -43,14 +43,9 @@ docker exec nachalo_backend python manage.py seed_international
 
 После запуска сайт доступен на http://localhost:8080.
 
-## Деплой
+## Репозиторий
 
-На сервере проект поднимается через Docker Compose:
-
-```bash
-cd /root/nachalo-rosta
-docker compose up -d --build
-```
+Исходники проекта: https://github.com/bekrahoon/nachalo-rosta-master.git
 
 ## Лицензия
 
